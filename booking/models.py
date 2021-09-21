@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Cabinet(models.Model):
-    # photo = models.ImageField('Фото кабинета', upload_to='static/')
+    photo = models.ImageField('Фото кабинета', upload_to='static/' )
     number_places = models.IntegerField('Всего мест')
     projector = models.BooleanField('Наличие проектора')
     floor = models.IntegerField('Этаж')
@@ -39,11 +39,5 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
-
-
-
-
-
-
 
 
