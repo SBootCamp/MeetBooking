@@ -12,11 +12,43 @@ class Cabinet(models.Model):
     def __str__(self):
         return self.room_number
 
-class Event(models.Model):
-    title = models.CharField('Название мероприятия', max_length=250)
-    date = models.DateField('Дата проведения мероприятия')
-    start_time = models.TimeField('Время начала мероприятия')
-    end_time = models.TimeField('Время окончания мероприятия')
+class DateRecord(models.Model):
+    date = models.DateField('Дата бронирования')
+
+    def __str__(self):
+        return f"Date {self.date}"
+
+
+class TimeRecord(models.Model):
+    time = models.TimeField('Время бронирования')
+
+    def __str__(self):
+        return f"Time {self.time}"
+
+class TechnicalWork(models.Model):
+    title = models.CharField('Название тех.работ', max_length=250)
+    date = models.OneToOneField(
+        DateRecord,
+        on_delete=models.SET_NULL,
+        related_name='technical_date',
+        verbose_name='Дата проведения мероприятия'
+    )
+    time = models.ManyToManyField(
+        TimeRecord,
+        verbose_name='Время проведения мероприятия',
+        related_name='technical_time'
+    )
+    cabinet = models.ForeignKey(
+        Cabinet,
+        on_delete=models.CASCADE,
+        related_name='technical_cabinet',
+        verbose_name='Кабинет'
+    )
+
+    def __str__(self):
+        return self.title
+
+class Event(TechnicalWork):
     completed = models.BooleanField('Completed')
     visitors = models.ManyToManyField(
         User,
@@ -29,12 +61,6 @@ class Event(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Организатор',
         related_name='event_sponsor'
-    )
-    cabinet = models.ForeignKey(
-        Cabinet,
-        on_delete=models.CASCADE,
-        related_name='event_cabinet',
-        verbose_name='Кабинет'
     )
 
     def __str__(self):
