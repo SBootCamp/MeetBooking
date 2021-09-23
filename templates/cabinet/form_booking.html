@@ -9,7 +9,7 @@
         <thead>
         <tr>
             <th scope="col"></th>
-            {% for date in dates %}
+            {% for date in schedule.date.all %}
             <th scope="col">{{ date.date|date:'d.m.y' }}</th>
             {% endfor %}
         </tr>
