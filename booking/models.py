@@ -1,11 +1,14 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 
 class Cabinet(models.Model):
     # photo = models.ImageField('Фото кабинета', upload_to='static/')
-    number_places = models.IntegerField('Всего мест')
+    place_count = models.IntegerField('Всего мест')
     projector = models.BooleanField('Наличие проектора')
+    tv = models.BooleanField('ТВ')
     floor = models.IntegerField('Этаж')
     room_number = models.IntegerField('Номер кабинета', unique=True)
 
@@ -13,54 +16,47 @@ class Cabinet(models.Model):
         return str(self.room_number)
 
 
-class DateBooking(models.Model):
-    date = models.DateField('Дата бронирования')
-
-    def __str__(self):
-        return f"Date {self.date}"
-
-
-class TimeBooking(models.Model):
-    time = models.TimeField('Время бронирования')
-
-    def __str__(self):
-        return f"Time {self.time}"
-
-
 class Event(models.Model):
     title = models.CharField('Название мероприятия', max_length=250)
-    date = models.ForeignKey(
-        DateBooking,
-        on_delete=models.CASCADE,
-        related_name='event_date',
-        verbose_name='Дата'
-    )
-    time = models.ManyToManyField(
-        TimeBooking,
-        related_name='event_time',
-        verbose_name='Время мероприятия'
-    )
+    date = models.DateField('Дата мероприятия')
+    start_time = models.TimeField('Время начала мероприятия')
+    end_time = models.TimeField('Время окончания мероприятия')
     cabinet = models.ForeignKey(
         Cabinet,
         on_delete=models.PROTECT,
         related_name='event_cabinet',
-        verbose_name='Кабинет'
+        verbose_name='Номер кабинета'
     )
-    completed = models.BooleanField('Completed')
     visitors = models.ManyToManyField(
         User,
         verbose_name='Посетители',
         related_name='event_visitors',
-        blank=True, null=True,
+        blank=True,
     )
-    sponsor = models.ForeignKey(
+    owner = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
         verbose_name='Организатор',
-        related_name='event_sponsor',
-        blank=True,
+        related_name='event_sponsor'
     )
-    technical_work = models.BooleanField('Технические работы', default=False, blank=True, null=True)
+
+    def clean(self):
+        if self.end_time <= self.start_time:
+            raise ValidationError('Время окончания мероприятия должно быть меньше времени начала мероприятия')
+
+        elif Event.objects.filter(
+                Q(start_time__lte=self.start_time, end_time__gte=self.start_time, cabinet=self.cabinet,
+                  date=self.date) |
+                Q(start_time__lte=self.end_time, end_time__gte=self.end_time, cabinet=self.cabinet,
+                  date=self.date) |
+                Q(start_time__gte=self.start_time, end_time__lte=self.end_time)).exists():
+            raise ValidationError('Указанное время занято')
+
+    class Meta:
+        unique_together = ['cabinet', 'date', 'start_time', 'end_time']
+
+    def duration(self):
+        pass
 
     def __str__(self):
         return self.title
