@@ -6,6 +6,7 @@ from .models import *
 class RecordAdmin(admin.ModelAdmin):
     list_display = ('title','cabinet', 'date','start_time', 'end_time')
 
+
 admin.site.register(Cabinet)
 
 
