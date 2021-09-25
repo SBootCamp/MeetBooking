@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Бронирование кабинетов{% endblock %}
+{% load static %}
+{% block content %}
+    <div class='container' style="margin-top: 30px">
+        <div class="row">
+            <div class="col-9">
+                <div class="schedule">
+                    <h2>Расписание кабинета</h2>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class='booking'>
+                    <div class="booking-form">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.title.label }}
+                            {{ form.title }}
+                            {{ form.date.label }}
+                            {{ form.date }}
+                            {{ form.start_time.label }}
+                            {{ form.start_time }}
+                            {{ form.end_time.label }}
+                            {{ form.end_time }}
+                            {{ form.cabinet }}
+                            <div class="errors">
+                                {{ form.non_field_errors }}
+                            </div>
+                            <button class="booking-btn" type="submit">Забронировать</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

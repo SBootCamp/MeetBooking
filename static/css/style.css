@@ -1,0 +1,125 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+#bg {
+    background-size: 1800px 900px;
+    background-repeat: no-repeat;
+    background-position: top;
+    background-attachment: fixed;
+    background: -webkit-linear-gradient(#c5e5e5, #ccddf9);
+    background: linear-gradient(#c9e5e9, #ccddf9);
+}
+
+button:active, button:focus {
+  outline: none;
+}
+button::-moz-focus-inner {
+  border: 0;
+}
+
+input, select {outline:none;}
+
+.booking-btn {
+    border: none;
+    background: #22b877;
+    line-height: 2em;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    color: #fff;
+    cursor: pointer;
+    bottom: 25px;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.booking-btn:hover {
+    background: #22a877;
+    color: #eee;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+}
+
+
+.input-field {
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+    margin-top: 3px;
+    line-height: 1.5em;
+    font-size: 1rem;
+    border: none;
+    padding: 5px 10px 5px 10px;
+    color: #fff;
+    box-sizing: border-box;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.errors{
+    color: red;
+}
+
+.booking {
+    background: #4488dd;
+    color: #eee;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: .9rem;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    box-sizing: border-box;
+    padding-left: 25px;
+    padding-right: 25px;
+    border-radius: 30px;
+    position: relative;
+}
+
+.booking-form {
+    margin: 25px 0 25px 0;
+    -webkit-flex-flow: column;
+    flex-flow: column;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+}
+.booking-form option{
+    background: #4488dd;
+}
+.schedule {
+    width: 100%;
+    background: #fff;
+    border-radius: 30px;
+    padding: 10px;
+
+}
+
+.schedule h2 {
+    text-align: left;
+    font-weight: 200;
+    font-family: lato;
+    font-size: 2.2rem;
+
+}
+
+@media (max-width: 600px) {
+
+    .booking {
+        width: 100%;
+        height: auto;
+        padding-bottom: 100px;
+        border-radius: 0;
+    }
+
+    .booking-btn {
+        border-radius: 0;
+    }
+}

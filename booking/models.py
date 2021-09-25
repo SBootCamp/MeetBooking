@@ -45,11 +45,13 @@ class Event(models.Model):
             raise ValidationError('Время окончания мероприятия должно быть меньше времени начала мероприятия')
 
         elif Event.objects.filter(
-                Q(start_time__lte=self.start_time, end_time__gte=self.start_time, cabinet=self.cabinet,
+                Q(start_time__lte=self.start_time,
+                  end_time__gte=self.start_time, cabinet=self.cabinet,
                   date=self.date) |
                 Q(start_time__lte=self.end_time, end_time__gte=self.end_time, cabinet=self.cabinet,
                   date=self.date) |
-                Q(start_time__gte=self.start_time, end_time__lte=self.end_time)).exists():
+                Q(start_time__gte=self.start_time, end_time__lte=self.end_time, cabinet=self.cabinet,
+                  date=self.date)).exists():
             raise ValidationError('Указанное время занято')
 
     class Meta:
