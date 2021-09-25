@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.utils.datetime_safe import datetime
 
 
 class Cabinet(models.Model):
@@ -53,6 +54,9 @@ class Event(models.Model):
                 Q(start_time__gte=self.start_time, end_time__lte=self.end_time, cabinet=self.cabinet,
                   date=self.date)).exists():
             raise ValidationError('Указанное время занято')
+
+        elif self.date < datetime.now().date() and self.start_time < datetime.now().time():
+            raise ValidationError('Запись на указанное время завершена')
 
     class Meta:
         unique_together = ['cabinet', 'date', 'start_time', 'end_time']
