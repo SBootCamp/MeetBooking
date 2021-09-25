@@ -1,13 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
-from django.views import View
-from django.views.generic import CreateView, ListView
-
+from django.views.generic import CreateView, ListView, DetailView
 from .models import Event, Cabinet
-
 from .forms import BookingForm
+from .services import create_schedule
 
 
 class CabinetListView(ListView):
@@ -15,14 +12,19 @@ class CabinetListView(ListView):
     template_name = 'cabinet/list_cabinets.html'
 
 
+class CabinetDetailView(DetailView):
+    template_name = 'cabinet/detail_cabinet.html'
+
+    def get_object(self, queryset=None):
+        try:
+            return Cabinet.objects.get(room_number=self.kwargs.get('pk'))
+        except Cabinet.DoesNotExist:
+            raise Http404
+
+
 class BookingView(LoginRequiredMixin, CreateView):
     form_class = BookingForm
-    template_name = 'cabinet/form_booking.html'
     success_url = 'booking'
-
-    def get_queryset(self, *args, **kwargs):
-        return Event.objects.filter(cabinet__room_number=self.kwargs.get('pk'))
-
 
     def form_valid(self, form):
         new_event = form.save(commit=False)
