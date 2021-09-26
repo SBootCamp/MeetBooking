@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.datetime_safe import datetime
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 
 class Cabinet(models.Model):
@@ -55,8 +56,15 @@ class Event(models.Model):
                   date=self.date)).exists():
             raise ValidationError('Указанное время занято')
 
-        elif self.date < datetime.now().date() and self.start_time < datetime.now().time():
+        elif self.date < datetime.now().date() \
+                and self.start_time < datetime.now().time() \
+                or self.date < datetime.now().date():
             raise ValidationError('Запись на указанное время завершена')
+
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
     class Meta:
         unique_together = ['cabinet', 'date', 'start_time', 'end_time']
