@@ -1,0 +1,5 @@
+[flake8]
+exclude = .git, __pycache__, __init__, venv, env, wsgi.py, settings.py, asgi.py
+max-line-length = 120
+max-complexity = 8
+ignore = D100, D104
