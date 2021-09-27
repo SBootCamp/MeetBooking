@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
-from django.db import models
-from django.core.exceptions import ValidationError
-from django.db.models import Q
-from django.utils.datetime_safe import datetime
+from django.db import models, IntegrityError
+from django.contrib.postgres.constraints import ExclusionConstraint
+from django.contrib.postgres.fields import DateTimeRangeField, RangeOperators, RangeBoundary
+from django.db.models import Q, Func
+from django.utils.datetime_safe import datetime as dt
 
 
 class Cabinet(models.Model):
@@ -21,11 +22,15 @@ class Cabinet(models.Model):
         verbose_name_plural = 'Кабинеты'
 
 
+class TsTzRange(Func):
+    function = 'TSTZRANGE'
+    output_field = DateTimeRangeField()
+
+
 class Event(models.Model):
     title = models.CharField(verbose_name='Название мероприятия', max_length=250, default='')
-    date = models.DateField(verbose_name='Дата мероприятия')
-    start_time = models.TimeField(verbose_name='Время начала мероприятия')
-    end_time = models.TimeField(verbose_name='Время окончания мероприятия')
+    start_time = models.DateTimeField(verbose_name='Время начала мероприятия')
+    end_time = models.DateTimeField(verbose_name='Время окончания мероприятия')
     cabinet = models.ForeignKey(
         Cabinet,
         on_delete=models.PROTECT,
@@ -45,31 +50,6 @@ class Event(models.Model):
         related_name='event_owner'
     )
 
-    def clean(self):
-        if self.end_time <= self.start_time:
-            raise ValidationError('Время окончания мероприятия должно быть больше времени начала мероприятия')
-
-        elif Event.objects.filter(
-                Q(start_time__lte=self.start_time,
-                  end_time__gt=self.start_time,
-                  cabinet=self.cabinet,
-                  date=self.date) |
-                Q(start_time__lt=self.end_time,
-                  end_time__gte=self.end_time,
-                  cabinet=self.cabinet,
-                  date=self.date) |
-                Q(start_time__gte=self.start_time,
-                  end_time__lte=self.end_time,
-                  cabinet=self.cabinet,
-                  date=self.date)
-        ).exclude(id=self.id).exists():
-            raise ValidationError('Указанное время занято')
-
-        elif self.date <= datetime.now().date() \
-                and self.start_time < datetime.now().time() \
-                and self.end_time < datetime.now().time():
-            raise ValidationError('Запись на указанное время завершена')
-
     # TODO:add functionality
     def duration(self):
         pass
@@ -77,10 +57,15 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super().save(*args, **kwargs)
-
     class Meta:
         verbose_name = 'Мероприятие'
         verbose_name_plural = 'Мероприятия'
+        constraints = [
+            ExclusionConstraint(
+                name='overlap_booking',
+                expressions=(
+                    (TsTzRange('start_time', 'end_time', RangeBoundary()), RangeOperators.OVERLAPS),
+                    ('cabinet', RangeOperators.EQUAL),
+                ),
+            ),
+        ]
