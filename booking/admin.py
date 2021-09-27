@@ -3,7 +3,7 @@ from .models import *
 
 
 @admin.register(Event)
-class RecordAdmin(admin.ModelAdmin):
+class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'cabinet', 'date', 'start_time', 'end_time')
 
 
