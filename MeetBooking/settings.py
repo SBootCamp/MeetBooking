@@ -21,6 +21,12 @@ INSTALLED_APPS = [
     'booking',
     'account_user',
 ]
+DEBUG_APPS = [
+    'debug_toolbar',
+]
+
+if DEBUG:
+    INSTALLED_APPS.extend(DEBUG_APPS)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -33,7 +39,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'MeetBooking.urls'
-
+INTERNAL_IPS = ['127.0.0.1', ]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
