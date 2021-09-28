@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  db_booking:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - test_postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admindb
+      - POSTGRES_DB=testdb
+
+volumes:
+  test_postgres-data:
+
