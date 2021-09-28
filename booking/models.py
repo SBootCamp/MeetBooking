@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User
-from django.db import models, IntegrityError
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.contrib.postgres.constraints import ExclusionConstraint
-from django.contrib.postgres.fields import DateTimeRangeField, RangeOperators, RangeBoundary
-from django.db.models import Q, Func
-from django.utils.datetime_safe import datetime as dt
+from django.contrib.postgres.fields import RangeOperators, RangeBoundary
+from django.utils import timezone
+
+from booking.contrib.postgres.functions import TsTzRange
 
 
 class Cabinet(models.Model):
@@ -20,11 +22,6 @@ class Cabinet(models.Model):
     class Meta:
         verbose_name = 'Кабинет'
         verbose_name_plural = 'Кабинеты'
-
-
-class TsTzRange(Func):
-    function = 'TSTZRANGE'
-    output_field = DateTimeRangeField()
 
 
 class Event(models.Model):
@@ -57,6 +54,18 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        now = timezone.now()
+        if self.start_time.date != self.end_time.date:
+            raise ValidationError('Продолжительность мероприятия должна быть меньше суток')
+
+        elif self.end_time <= now:
+            raise ValidationError('Запись на указанное время завершена')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = 'Мероприятие'
         verbose_name_plural = 'Мероприятия'
@@ -67,5 +76,9 @@ class Event(models.Model):
                     (TsTzRange('start_time', 'end_time', RangeBoundary()), RangeOperators.OVERLAPS),
                     ('cabinet', RangeOperators.EQUAL),
                 ),
+            ),
+            models.CheckConstraint(
+                name='check_datetime',
+                check=models.Q(start_time__lt=models.F("end_time"))
             ),
         ]
