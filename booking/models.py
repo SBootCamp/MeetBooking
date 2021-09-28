@@ -67,19 +67,19 @@ class Event(models.Model):
         return super().save(*args, **kwargs)
 
 
-class Meta:
-    verbose_name = 'Мероприятие'
-    verbose_name_plural = 'Мероприятия'
-    constraints = [
-        ExclusionConstraint(
-            name='overlap_booking',
-            expressions=(
-                (TsTzRange('start_time', 'end_time', RangeBoundary()), RangeOperators.OVERLAPS),
-                ('cabinet', RangeOperators.EQUAL),
+    class Meta:
+        verbose_name = 'Мероприятие'
+        verbose_name_plural = 'Мероприятия'
+        constraints = [
+            ExclusionConstraint(
+                name='overlap_booking',
+                expressions=(
+                    (TsTzRange('start_time', 'end_time', RangeBoundary()), RangeOperators.OVERLAPS),
+                    ('cabinet', RangeOperators.EQUAL),
+                ),
             ),
-        ),
-        models.CheckConstraint(
-            name='check_datetime',
-            check=models.Q(start_time__lte=models.F("end_time"))
-        ),
-    ]
+            models.CheckConstraint(
+                name='check_datetime',
+                check=models.Q(start_time__lte=models.F("end_time"))
+            ),
+        ]
