@@ -1,5 +1,5 @@
 [flake8]
-exclude = .git, __pycache__, __init__, venv, env, wsgi.py, settings.py, asgi.py
+exclude = .git, __pycache__, __init__, migrations
 max-line-length = 120
 max-complexity = 8
-ignore = D100, D104
+ignore =
