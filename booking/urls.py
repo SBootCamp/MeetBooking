@@ -8,7 +8,3 @@ router.register("", views.CabinetView, basename="cabinets")
 router.register("(?P<room_number>[^/.]+)/event", views.EventView, basename="event")
 urlpatterns = router.urls
 
-
-
-
-

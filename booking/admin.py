@@ -3,8 +3,8 @@ from .models import *
 
 
 @admin.register(Event)
-class RecordAdmin(admin.ModelAdmin):
-    list_display = ('title', 'cabinet', 'date', 'start_time', 'end_time')
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('title', 'cabinet', 'start_time', 'end_time')
 
 
 admin.site.register(Cabinet)
