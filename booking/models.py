@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.postgres.constraints import ExclusionConstraint
 from django.contrib.postgres.fields import RangeOperators, RangeBoundary
 from django.utils import timezone
+=======
+
+>>>>>>> 94ac9410c4f8561469fa2e80b344138db6038bc4
 
 from booking.contrib.postgres.functions import TsTzRange
 
