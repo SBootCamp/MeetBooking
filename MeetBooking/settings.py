@@ -18,6 +18,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'booking',
+    'account_user',
 ]
 
 MIDDLEWARE = [
@@ -92,8 +94,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 #REDIS
-REDIS_HOST = '0.0.0.0'
-REDIS_PORT = '6379'
+REDIS_HOST='0.0.0.0'
+REDIS_PORT='6379'
 CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
 CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
 CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
@@ -103,9 +105,9 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 
 #SMTP
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_HOST_USER = 'test-infomaxim@yandex.ru'
-EMAIL_HOST_PASSWORD = 'UMz-ALG-aXq-8cv'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND')
+EMAIL_HOST=os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT=os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS')
