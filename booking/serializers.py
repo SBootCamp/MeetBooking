@@ -1,21 +1,7 @@
-from calendar import monthrange
-
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from .models import Cabinet, Event
-
-TIMES = [
-    '09:00', '09:30', '10:00', '10:30', '11:00',
-    '11:30', '12:00', '12:30', '13:00', '13:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00',
-    '16:30', '17:00', '17:30', '18:00', '18:30',
-    '19:00', '19:30', '20:00', '20:30', '21:00',
-]
-DATES = ['{:04d}-{:02d}-{:02d}'.format(2021, 9, day) for day in range(1, monthrange(2021, 9)[1] + 1)]
-blank_choice = (('', '----'),)
-TIMES_CHOICES = blank_choice + tuple([(time, time) for time in TIMES])
-DATES_CHOICES = blank_choice + tuple([(date, date) for date in DATES])
 
 
 class CustomerHyperlink(serializers.HyperlinkedIdentityField):
@@ -36,12 +22,10 @@ class CabinetSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-    start_time = serializers.ChoiceField(choices=TIMES_CHOICES, label='Время начала')
-    end_time = serializers.ChoiceField(choices=TIMES_CHOICES, label='Время окончания')
-    date = serializers.ChoiceField(choices=DATES_CHOICES, label='Дата проведения')
+    start_time = serializers.DateTimeField(label='Дата и время начала')
+    end_time = serializers.DateTimeField(label='Дата и время окончания')
     owner = serializers.SlugField(source='owner.username', read_only=True)
 
     class Meta:
         model = Event
-        fields = ('id', 'title', 'date', 'start_time', 'end_time', 'cabinet', 'owner')
-
+        fields = ('id', 'title', 'start_time', 'end_time', 'cabinet', 'owner')

@@ -21,16 +21,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'debug_toolbar',
 
     'booking',
 ]
 DEBUG_APPS = [
     'debug_toolbar',
 ]
-
-if DEBUG:
-    INSTALLED_APPS.extend(DEBUG_APPS)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -41,6 +37,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+DEBUG_MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+if DEBUG:
+    INSTALLED_APPS.extend(DEBUG_APPS)
+    MIDDLEWARE.extend(DEBUG_MIDDLEWARE)
+
 
 ROOT_URLCONF = 'MeetBooking.urls'
 INTERNAL_IPS = ['127.0.0.1', ]

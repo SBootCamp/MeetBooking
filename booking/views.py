@@ -1,9 +1,12 @@
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.http import Http404
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework import permissions, serializers
 from booking.models import Cabinet, Event
 from booking.serializers import CabinetSerializer, EventSerializer
+from booking.utils.errors_draft import ResponseError
+from booking.utils.processing_errors_sql import get_message_error
 from booking.viewsets import RetrieveListCreateViewSet
 
 
@@ -30,5 +33,6 @@ class EventView(RetrieveListCreateViewSet):
     def perform_create(self, serializer):
         try:
             serializer.save(owner=self.request.user)
-        except ValidationError as e:
-            raise serializers.ValidationError(' '.join(e.message_dict.get('__all__')))
+        except IntegrityError as exp:
+            error_message = get_message_error(str(exp))
+            raise serializers.ValidationError(error_message)
