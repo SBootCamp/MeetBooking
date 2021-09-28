@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+
 load_dotenv('.env')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,7 +19,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'booking',
 ]
+DEBUG_APPS = [
+    'debug_toolbar',
+]
+
+if DEBUG:
+    INSTALLED_APPS.extend(DEBUG_APPS)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -31,7 +40,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'MeetBooking.urls'
-
+INTERNAL_IPS = ['127.0.0.1', ]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
