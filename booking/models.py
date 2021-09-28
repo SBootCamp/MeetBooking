@@ -12,7 +12,7 @@ class Cabinet(models.Model):
     # photo = models.ImageField('Фото кабинета', upload_to='static/')
     place_count = models.IntegerField(verbose_name='Всего мест', default=0)
     projector = models.BooleanField(verbose_name='Наличие проектора', default=False)
-    tv = models.BooleanField(verbose_name='ТВ', default=False)
+    tv = models.BooleanField(verbose_name='Наличие ТВ', default=False)
     floor = models.IntegerField(verbose_name='Этаж')
     room_number = models.IntegerField(verbose_name='Номер кабинета')
 
@@ -56,8 +56,8 @@ class Event(models.Model):
 
     def clean(self):
         now = timezone.now()
-        if self.start_time.date != self.end_time.date:
-            raise ValidationError('Продолжительность мероприятия должна быть меньше суток')
+        if self.start_time.date() != self.end_time.date():
+            raise ValidationError('Даты не совпадают')
 
         elif self.end_time <= now:
             raise ValidationError('Запись на указанное время завершена')
