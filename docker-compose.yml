@@ -8,6 +8,17 @@ services:
       - redis:/var/lib/redis/data
     environment:
       - REDIS_PASSWORD=password
+  db_booking:
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - test_postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admindb
+      - POSTGRES_DB=testdb
 
 volumes:
   redis:
+  test_postgres-data:
