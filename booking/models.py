@@ -12,12 +12,16 @@ class Cabinet(models.Model):
     # photo = models.ImageField('Фото кабинета', upload_to='static/')
     place_count = models.IntegerField(verbose_name='Всего мест', default=0)
     projector = models.BooleanField(verbose_name='Наличие проектора', default=False)
-    tv = models.BooleanField(verbose_name='ТВ', default=False)
+    tv = models.BooleanField(verbose_name='Наличие ТВ', default=False)
     floor = models.IntegerField(verbose_name='Этаж')
     room_number = models.IntegerField(verbose_name='Номер кабинета')
 
     def __str__(self):
         return str(self.room_number)
+
+    class Meta:
+        verbose_name = 'Кабинет'
+        verbose_name_plural = 'Кабинеты'
 
 
 class Event(models.Model):
@@ -43,26 +47,7 @@ class Event(models.Model):
         related_name='event_owner'
     )
 
-    def clean(self):
-        if self.end_time <= self.start_time:
-            raise ValidationError('Время окончания мероприятия должно быть меньше времени начала мероприятия')
-
-        elif Event.objects.filter(
-                Q(start_time__lte=self.start_time,
-                  end_time__gte=self.start_time, cabinet=self.cabinet,
-                  date=self.date) |
-                Q(start_time__lte=self.end_time, end_time__gte=self.end_time, cabinet=self.cabinet,
-                  date=self.date) |
-                Q(start_time__gte=self.start_time, end_time__lte=self.end_time, cabinet=self.cabinet,
-                  date=self.date)).exists():
-            raise ValidationError('Указанное время занято')
-
-        elif self.date < datetime.now().date() and self.start_time < datetime.now().time():
-            raise ValidationError('Запись на указанное время завершена')
-
-    class Meta:
-        unique_together = ['cabinet', 'date', 'start_time', 'end_time']
-
+    # TODO:add functionality
     def duration(self):
         pass
 
@@ -71,10 +56,10 @@ class Event(models.Model):
 
     def clean(self):
         now = timezone.now()
-        if self.start_time.date != self.end_time.date:
-            raise ValidationError('Продолжительность мероприятия должна быть меньше суток')
+        if self.start_time.date() != self.end_time.date():
+            raise ValidationError('Даты не совпадают')
 
-        elif self.start_time <= now and self.end_time <= now:
+        elif self.end_time <= now:
             raise ValidationError('Запись на указанное время завершена')
 
     def save(self, *args, **kwargs):
@@ -94,6 +79,6 @@ class Event(models.Model):
             ),
             models.CheckConstraint(
                 name='check_datetime',
-                check=models.Q(start_time__lte=models.F("end_time"))
+                check=models.Q(start_time__lt=models.F("end_time"))
             ),
         ]
