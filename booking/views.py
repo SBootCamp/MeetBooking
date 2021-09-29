@@ -1,14 +1,15 @@
-from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import Http404
+from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework import permissions, serializers
+from rest_framework.decorators import action
+
+from booking.utils.processing_errors_sql import get_message_error
+from booking.viewsets import RetrieveListCreateViewSet
 from booking.models import Cabinet, Event
 from booking.serializers import CabinetListSerializer, CabinetDetailSerializer, EventSerializer
 from booking.services import create_schedule
-from booking.utils.errors_draft import ResponseError
-from booking.utils.processing_errors_sql import get_message_error
-from booking.viewsets import RetrieveListCreateViewSet
 
 
 class CabinetView(ReadOnlyModelViewSet):
@@ -24,6 +25,11 @@ class CabinetView(ReadOnlyModelViewSet):
         if self.action == 'retrieve':
             return CabinetDetailSerializer
         return CabinetListSerializer
+
+    @action(detail=True, methods=['get'])
+    def schedule(self, *args, **kwargs):
+        event = self.get_object().event_cabinet.order_by('start_time').values()
+        return Response(create_schedule(list(event)), status=201)
 
 
 class EventView(RetrieveListCreateViewSet):
