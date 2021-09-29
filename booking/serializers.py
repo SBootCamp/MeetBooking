@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from .models import Cabinet, Event
+from .services import create_schedule
 
 
 class CustomerHyperlink(serializers.HyperlinkedIdentityField):
@@ -13,12 +14,24 @@ class CustomerHyperlink(serializers.HyperlinkedIdentityField):
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
 
-class CabinetSerializer(serializers.ModelSerializer):
+class CabinetListSerializer(serializers.ModelSerializer):
     url = CustomerHyperlink(view_name='cabinets-detail')
 
     class Meta:
         model = Cabinet
         fields = ('room_number', 'floor', 'place_count', 'tv', 'projector', 'url')
+
+
+class CabinetDetailSerializer(serializers.ModelSerializer):
+    schedule = serializers.SerializerMethodField()
+
+    def get_schedule(self, obj):
+        schedule = create_schedule(obj.event_cabinet.all().values())
+        return schedule
+
+    class Meta:
+        model = Cabinet
+        fields = ('room_number', 'floor', 'place_count', 'tv', 'projector', 'schedule')
 
 
 class EventSerializer(serializers.ModelSerializer):
