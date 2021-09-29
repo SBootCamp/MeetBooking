@@ -2,3 +2,4 @@
 exclude = .git, __pycache__, __init__, migrations
 max-line-length = 120
 max-complexity = 8
+ignore = W292
