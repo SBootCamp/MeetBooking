@@ -3,8 +3,7 @@ from django.contrib.auth.models import User
 
 from MeetBooking.settings import EMAIL_HOST_USER
 from booking.celery import app
-from booking.models import Event
-from datetime import datetime, timedelta
+from datetime import timedelta
 from django.utils import timezone
 
 @app.task
