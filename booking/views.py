@@ -1,12 +1,13 @@
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import Http404
 from rest_framework.response import Response
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework import permissions, serializers
 from rest_framework.decorators import action
 
-from booking.utils.processing_errors_sql import get_message_error
-from booking.viewsets import RetrieveListCreateViewSet
+from booking.permissions import PermissionMixin, IsOwnerEvent
+
 from booking.models import Cabinet, Event
 from booking.serializers import CabinetListSerializer, CabinetDetailSerializer, EventSerializer
 from booking.services import create_schedule
@@ -28,14 +29,18 @@ class CabinetView(ReadOnlyModelViewSet):
 
     @action(detail=True, methods=['get'])
     def schedule(self, *args, **kwargs):
-        event = self.get_object().event_cabinet.order_by('start_time').values()
+        event = self.get_object().event_cabinet.values('id', 'title', 'start_time', 'end_time')
         return Response(create_schedule(list(event)), status=201)
 
 
-class EventView(RetrieveListCreateViewSet):
-    permission_classes = [permissions.AllowAny]
-    permission_classes_by_action = {'create': [permissions.IsAuthenticated]}
+class EventView(PermissionMixin, ModelViewSet):
     serializer_class = EventSerializer
+    permission_classes = [IsOwnerEvent]
+    permission_classes_by_action = {
+        'list': [permissions.AllowAny],
+        'retrieve': [permissions.AllowAny],
+        'create': [permissions.IsAuthenticated],
+    }
 
     def get_queryset(self):
         return Event.objects.select_related('cabinet', 'owner') \
@@ -45,5 +50,10 @@ class EventView(RetrieveListCreateViewSet):
         try:
             serializer.save(owner=self.request.user)
         except IntegrityError as exp:
-            error_message = get_message_error(exp)
+            if 'check_datetime' in str(exp):
+                error_message = 'Время окончания должно быть больше начала'
+            else:
+                error_message = f'Указанное время занято'
             raise serializers.ValidationError(error_message)
+        except ValidationError as exp:
+            raise serializers.ValidationError(exp.messages)

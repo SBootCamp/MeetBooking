@@ -5,19 +5,22 @@ import pytz
 
 from booking.models import Event
 
-
-def create_choice_time(start: int, end: int, delta: int):
+def create_choice_time(start: int, end: int, delta: int) -> list:
     """
-    :param start: int
-    :param end: int
-    :param delta: minute
-    :return: list times
+    :param start:
+    :param end:
+    :param delta:
+    :return:
     """
     cut = 60 // delta - 1
     return [datetime.time(hour=i, minute=j) for i in range(start, end + 1) for j in range(0, 60, delta)][:-cut]
 
-
-def create_choice_date(year: int, month: int):
+def create_choice_date(year: int, month: int) -> list:
+    """
+    :param year:
+    :param month:
+    :return:
+    """
     return [datetime.date(year=year, month=month, day=day) for day in range(1, monthrange(2021, 9)[1] + 1)]
 
 
@@ -26,8 +29,7 @@ DATES = create_choice_date(2021, 10)
 TIMES_CHOICES = tuple([(time, time) for time in TIMES])
 DATES_CHOICES = tuple([(date, date) for date in DATES])
 
-
-def create_test_event():
+def create_test_event(cabinet):
     for i in range(0, 5000):
         delta = (0, 30)
         day = random.randint(1, 31)
@@ -49,14 +51,21 @@ def create_test_event():
                 start_time=date_time_start,
                 end_time=date_time_end,
                 owner_id=1,
-                cabinet_id=1
+                cabinet=cabinet
             )
             print(f'Good {i}')
         except:
             continue
 
 
-def update_time_dict(time_dict, time, date, events):
+def update_time_dict(time_dict: dict, time: str, date: str, events: list) -> dict:
+    """
+    :param time_dict:
+    :param time:
+    :param date:
+    :param events:
+    :return:
+    """
     for event in events:
         if event['start_time'].date() == date:
             if event['start_time'].time() <= time <= event['end_time'].time():
@@ -64,9 +73,13 @@ def update_time_dict(time_dict, time, date, events):
     return time_dict
 
 
-def create_time_list(events: list, date: datetime.date):
+def create_time_list(events: list, date: datetime.date) -> list:
     return [update_time_dict({f'{time}': None}, time, date, events) for time in TIMES]
 
 
-def create_schedule(events):
+def create_schedule(events: list) -> list:
+    """
+    :param events: list events
+    :return: dictionary list {'date':{'time':event}}
+    """
     return [{str(date): create_time_list(events, date)} for date in DATES]
