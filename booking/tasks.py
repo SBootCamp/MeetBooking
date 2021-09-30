@@ -21,7 +21,7 @@ def send_spam_email():
     if user_list:
         event_start = user_list[0].get('event_visitors__start_time')
         message = ('Напоминание о мероприятии',
-                   f'Ваше мероприятие начнется через 30 минут, {event_start}',
+                   f'Ваше мероприятие начнется через 30 минут, начало в {event_start.strftime("%Y-%m-%d %H:%M")}',
                    EMAIL_HOST_USER,
                    email_list)
         send_mass_mail((message,), fail_silently=False)
