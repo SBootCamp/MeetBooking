@@ -1,28 +1,31 @@
-from django.core.mail import send_mail
+from django.core.mail import send_mass_mail
+from django.contrib.auth.models import User
+
+from MeetBooking.settings import EMAIL_HOST_USER
 from booking.celery import app
 from booking.models import Event
 from datetime import datetime, timedelta
-
+from django.utils import timezone
 
 @app.task
 def send_spam_email():
-    now_time = datetime.now().strftime('%Y-%m-%d %H:%M')
-    list = Event.objects.order_by('start_time')
-    nearest_event_time = getattr(list[0], 'start_time')
-    print(nearest_event_time.strftime('%Y-%m-%d %H:%M'))
-    print(now_time)
-    print('------')
-    time_to_send = nearest_event_time - timedelta(minutes=30)
-    print(time_to_send.strftime('%Y-%m-%d %H:%M'))
-    if time_to_send.strftime('%Y-%m-%d %H:%M') == nearest_event_time.strftime('%Y-%m-%d %H:%M'):
-        send_mail(
-            'Напоминание о мероприятии',
-            '',
-            'mbannakov13@gmail.com',
-            [mail.email],
-            fail_silently=False,
-        )
+    now_date = timezone.now()
+    end = timezone.now() + timedelta(minutes=32)
 
-#celery -A MeetBooking worker -l info
-#celery -A MeetBooking beat -l info
+    user_list = User.objects.prefetch_related('event_visitors')\
+        .filter(event_visitors__start_time__gte=now_date, event_visitors__start_time__lte=end)\
+        .values('email', 'event_visitors__start_time')
+
+    email_list = [user.get('email') for user in user_list]
+    event_start = user_list[0].get('event_visitors__start_time')
+
+    if user_list:
+        message = ('Напоминание о мероприятии',
+                   f'Ваше мероприятие начнется через 30 минут, {event_start}',
+                   EMAIL_HOST_USER,
+                   email_list)
+        send_mass_mail((message,), fail_silently=False)
+
+#celery -A booking worker -l info
+#celery -A booking beat -l info
 #from booking.tasks import send_spam_email
