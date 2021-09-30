@@ -17,14 +17,15 @@ def send_spam_email():
         .values('email', 'event_visitors__start_time')
 
     email_list = [user.get('email') for user in user_list]
-    event_start = user_list[0].get('event_visitors__start_time')
 
     if user_list:
+        event_start = user_list[0].get('event_visitors__start_time')
         message = ('Напоминание о мероприятии',
                    f'Ваше мероприятие начнется через 30 минут, {event_start}',
                    EMAIL_HOST_USER,
                    email_list)
         send_mass_mail((message,), fail_silently=False)
+
 
 #celery -A booking worker -l info
 #celery -A booking beat -l info
