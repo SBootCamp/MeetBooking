@@ -1,5 +1,7 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.db.models import Prefetch
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
@@ -7,10 +9,10 @@ from rest_framework import permissions, serializers
 from rest_framework.decorators import action
 
 from booking.permissions import PermissionMixin, IsOwnerEvent
-
 from booking.models import Cabinet, Event
 from booking.serializers import CabinetListSerializer, CabinetDetailSerializer, EventSerializer
 from booking.services import create_schedule
+
 
 
 class CabinetView(ReadOnlyModelViewSet):
@@ -29,7 +31,7 @@ class CabinetView(ReadOnlyModelViewSet):
 
     @action(detail=True, methods=['get'])
     def schedule(self, *args, **kwargs):
-        event = self.get_object().event_cabinet.values('id', 'title', 'start_time', 'end_time')
+        event = self.get_object().event_cabinet.values('id', 'title', 'start_time', 'end_time', 'owner__username')
         return Response(create_schedule(list(event)), status=201)
 
 
@@ -43,7 +45,9 @@ class EventView(PermissionMixin, ModelViewSet):
     }
 
     def get_queryset(self):
-        return Event.objects.select_related('cabinet', 'owner') \
+        return Event.objects.select_related('owner') \
+            .prefetch_related(Prefetch('visitors', queryset=User.objects.only('username'))) \
+            .only('owner__username', 'title', 'cabinet__room_number', 'start_time', 'end_time') \
             .filter(cabinet__room_number=self.kwargs.get('room_number'))
 
     def perform_create(self, serializer):

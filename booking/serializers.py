@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
@@ -25,11 +26,22 @@ class CabinetDetailSerializer(CabinetListSerializer):
     url = CustomerHyperlink(view_name='cabinets-schedule')
 
 
+class VisitorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username',)
+
+
+# TODO: уточнить как будут записываться посетители
 class EventSerializer(serializers.ModelSerializer):
     start_time = serializers.DateTimeField(label='Дата и время начала')
     end_time = serializers.DateTimeField(label='Дата и время окончания')
-    owner = serializers.SlugField(source='owner.username', read_only=True)
+    owner = serializers.SerializerMethodField()
+    visitors = VisitorSerializer(many=True)
+
+    def get_owner(self, obj):
+        return obj.owner.username
 
     class Meta:
         model = Event
-        fields = ('id', 'title', 'start_time', 'end_time', 'cabinet', 'owner')
+        fields = ('id', 'title', 'start_time', 'end_time', 'owner', 'cabinet', 'visitors')

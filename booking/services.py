@@ -1,85 +1,53 @@
+import calendar
+import copy
 import datetime
-from calendar import monthrange
-import random
 import pytz
 
-from booking.models import Event
+YEAR_NOW = 2021
+MONTH_NOW = 10
+START_TIME = 9
+END_TIME = 21
+STEP_TIME = 30
 
-def create_choice_time(start: int, end: int, delta: int) -> list:
+
+def create_time_list(start_time: int, end_time: int, step_time: int) -> list:
     """
-    :param start:
-    :param end:
-    :param delta:
-    :return:
+    :return list of tuples of recordable time where tuple[0] - hours, tuple[1] - minutes
     """
-    cut = 60 // delta - 1
-    return [datetime.time(hour=i, minute=j) for i in range(start, end + 1) for j in range(0, 60, delta)][:-cut]
+    cut = 60 // step_time - 1
+    return [(hour, minute) for hour in range(start_time, end_time + 1)
+            for minute in range(0, 60, step_time)][:-cut]
 
-def create_choice_date(year: int, month: int) -> list:
+
+def create_date_list(year: int, month: int) -> list:
     """
-    :param year:
-    :param month:
-    :return:
+    :return list of dates <class: datetime.datetime> available for recording
     """
-    return [datetime.date(year=year, month=month, day=day) for day in range(1, monthrange(2021, 9)[1] + 1)]
+    return [datetime.datetime(year=year, month=month, day=day, tzinfo=pytz.UTC)
+            for day in range(1, calendar.monthrange(year, month)[1] + 1)]
 
 
-TIMES = create_choice_time(9, 21, 30)
-DATES = create_choice_date(2021, 10)
-TIMES_CHOICES = tuple([(time, time) for time in TIMES])
-DATES_CHOICES = tuple([(date, date) for date in DATES])
-
-def create_test_event(cabinet):
-    for i in range(0, 5000):
-        delta = (0, 30)
-        day = random.randint(1, 31)
-        date_time_start = datetime.datetime(
-            year=2021, month=10,
-            day=day, hour=random.randint(9, 21),
-            minute=random.choice(delta),
-            tzinfo=pytz.UTC,
-        )
-        date_time_end = datetime.datetime(
-            year=2021, month=10,
-            day=day, hour=random.randint(9, 21),
-            minute=random.choice(delta),
-            tzinfo=pytz.UTC,
-        )
-        try:
-            Event.objects.create(
-                title=f'test {i}',
-                start_time=date_time_start,
-                end_time=date_time_end,
-                owner_id=1,
-                cabinet=cabinet
-            )
-            print(f'Good {i}')
-        except:
-            continue
-
-
-def update_time_dict(time_dict: dict, time: str, date: str, events: list) -> dict:
+def create_datetime_dict(dates: list, times: list) -> dict:
     """
-    :param time_dict:
-    :param time:
-    :param date:
-    :param events:
-    :return:
+    :return: dictionary of the form {'date':{'time':null}}
     """
+    return {str(date.date()): {str(datetime.time(*time)): None for time in times} for date in dates}
+
+
+TIMES = create_time_list(START_TIME, END_TIME, STEP_TIME)
+DATES = create_date_list(YEAR_NOW, MONTH_NOW)
+DATE_TIMES = create_datetime_dict(DATES, TIMES)
+
+
+def create_schedule(events: list) -> dict:
+    """
+    :return: dictionary of the form {'date':{'time':event}}
+    """
+    dict_output = copy.deepcopy(DATE_TIMES)
     for event in events:
-        if event['start_time'].date() == date:
-            if event['start_time'].time() <= time <= event['end_time'].time():
-                time_dict[f'{time}'] = event
-    return time_dict
-
-
-def create_time_list(events: list, date: datetime.date) -> list:
-    return [update_time_dict({f'{time}': None}, time, date, events) for time in TIMES]
-
-
-def create_schedule(events: list) -> list:
-    """
-    :param events: list events
-    :return: dictionary list {'date':{'time':event}}
-    """
-    return [{str(date): create_time_list(events, date)} for date in DATES]
+        start_time = event['start_time']
+        end_time = event['end_time']
+        while start_time != end_time:
+            dict_output[str(start_time.date())][str(start_time.time())] = event
+            start_time += datetime.timedelta(minutes=STEP_TIME)
+    return dict_output
