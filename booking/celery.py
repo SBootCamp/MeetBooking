@@ -12,6 +12,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'send-spam': {
         'task': 'booking.tasks.send_spam_email',
-        'schedule': crontab(minute='*/1')
+        'schedule': crontab(minute='*/30')
     }
 }

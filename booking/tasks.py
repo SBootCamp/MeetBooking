@@ -1,31 +1,49 @@
-from django.core.mail import send_mass_mail
+from django.core.mail import send_mass_mail, send_mail
 from django.contrib.auth.models import User
+from django.db.models import Prefetch
 
 from MeetBooking.settings import EMAIL_HOST_USER
 from booking.celery import app
 from datetime import timedelta
 from django.utils import timezone
 
+from booking.models import Event
+
+#from booking.tasks import send_spam_email
 @app.task
 def send_spam_email():
     now_date = timezone.now()
     end = timezone.now() + timedelta(minutes=32)
 
-    user_list = User.objects.prefetch_related('event_visitors')\
-        .filter(event_visitors__start_time__gte=now_date, event_visitors__start_time__lte=end)\
-        .values('email', 'event_visitors__start_time')
+    event_list = Event.objects.prefetch_related(Prefetch('visitors', queryset=User.objects.only('email'))) \
+        .filter(start_time__gte=now_date, start_time__lte=end) \
+        .only('title', 'visitors')
 
-    email_list = [user.get('email') for user in user_list]
+    if event_list:
+        for event in event_list:
+            email_dict = event.visitors.values('email')
+            email_list = []
+            email = [email_list.append(email.get('email')) for email in email_dict]
 
-    if user_list:
-        event_start = user_list[0].get('event_visitors__start_time')
-        message = ('Напоминание о мероприятии',
-                   f'Ваше мероприятие начнется через 30 минут, начало в {event_start.strftime("%Y-%m-%d %H:%M")}',
-                   EMAIL_HOST_USER,
-                   email_list)
-        send_mass_mail((message,), fail_silently=False)
+            message = ('Напоминание о мероприятии',
+                       f"Здравствуйте, мероприятие '{event.title}' \
+                       будет длиться с {event.start_time + timedelta(hours=3)} \
+                        до {event.end_time + timedelta(hours=3)}, в {event.cabinet} кабинете, на {event.cabinet.floor}",
 
+                       EMAIL_HOST_USER,
+                       email_list)
+
+            send_mass_mail((message, ), fail_silently=False)
+
+            send_mail(
+                'Напоминание о мероприятии для руководителя',
+                f"Здравствуйте, мероприятие '{event.title}' \
+                будет длиться с {event.start_time + timedelta(hours=3)} \
+                до {event.end_time + timedelta(hours=3)}, в {event.cabinet} кабинете, на {event.cabinet.floor}",
+
+                EMAIL_HOST_USER,
+                [event.owner.email],
+            )
 
 #celery -A booking worker -l info
 #celery -A booking beat -l info
-#from booking.tasks import send_spam_email
