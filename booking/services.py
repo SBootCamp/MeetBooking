@@ -14,6 +14,7 @@ def create_time_list(start_time: int, end_time: int, step_time: int) -> list:
     """
     :return list of tuples of recordable time where tuple[0] - hours, tuple[1] - minutes
     """
+
     cut = 60 // step_time - 1
     return [(hour, minute) for hour in range(start_time, end_time + 1)
             for minute in range(0, 60, step_time)][:-cut]
@@ -48,6 +49,8 @@ def create_schedule(events: list) -> dict:
         start_time = event['start_time']
         end_time = event['end_time']
         while start_time != end_time:
-            dict_output[str(start_time.date())][str(start_time.time())] = event
+            date = str(start_time.date())
+            time = str(start_time.time())
+            dict_output[date][time] = event
             start_time += datetime.timedelta(minutes=STEP_TIME)
     return dict_output

@@ -4,7 +4,7 @@ from .models import *
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'cabinet', 'start_time', 'end_time')
+    list_display = ('title', 'id', 'cabinet', 'start_time', 'end_time')
     list_filter = ('cabinet',)
 
 
