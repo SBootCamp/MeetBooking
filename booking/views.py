@@ -9,10 +9,11 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework import permissions, serializers
 from rest_framework.decorators import action
 
-from booking.permissions import PermissionMixin, IsOwnerEvent
+from booking.mixins import PermissionMixin
+from booking.permissions import IsOwnerEvent
 from booking.models import Cabinet, Event
 from booking.serializers import CabinetListSerializer, CabinetDetailSerializer, EventListSerializer, \
-    EventDetailSerializer,EventCreateUpdateSerializer
+    EventDetailSerializer, EventCreateUpdateSerializer
 from booking.services import create_schedule
 
 
@@ -37,7 +38,7 @@ class CabinetView(ReadOnlyModelViewSet):
             'id', 'title', 'start_time',
             'end_time', 'owner__username'
         )
-        return Response(create_schedule(list(event)), status=201)
+        return Response(create_schedule(event), status=201)
 
 
 class EventView(PermissionMixin, ModelViewSet):
@@ -55,7 +56,7 @@ class EventView(PermissionMixin, ModelViewSet):
             cabinet__room_number=self.kwargs.get('room_number'),
             start_time__month=datetime.now().month
         )
-        if self.action in ('retrieve', 'create', 'update'):
+        if self.action != 'list':
             return queryset.prefetch_related(Prefetch('visitors', queryset=User.objects.only('username')))
         return queryset
 
@@ -71,9 +72,9 @@ class EventView(PermissionMixin, ModelViewSet):
             serializer.save(owner=self.request.user)
         except IntegrityError as exp:
             if 'check_datetime' in str(exp):
-                error_message = 'Время окончания должно быть больше начала'
+                error_message = 'Время окончания мероприятия должно быть больше начала'
             else:
-                error_message = f'Указанное время занято'
+                error_message = 'Указанное время занято'
             raise serializers.ValidationError(error_message)
         except ValidationError as exp:
             raise serializers.ValidationError(exp.messages)

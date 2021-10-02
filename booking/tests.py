@@ -1,9 +1,9 @@
 from datetime import datetime
 import random
 import pytz
-from rest_framework import request
+from django.db import IntegrityError
 from django.contrib.auth.models import User
-from django.test import TestCase
+
 
 from booking.models import Event
 
@@ -33,7 +33,7 @@ def create_test_event(cabinet):
                 cabinet=cabinet
             )
             print(f'Good {i}')
-        except:
+        except (IntegrityError, ValueError):
             continue
 
 

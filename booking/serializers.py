@@ -31,39 +31,35 @@ class CabinetListSerializer(serializers.ModelSerializer):
         fields = ('room_number', 'floor', 'place_count', 'tv', 'projector', 'url')
 
 
-class CabinetDetailSerializer(CabinetListSerializer):
-    url = CustomerHyperlinkCabinet(view_name='cabinets-schedule')
+class CabinetDetailSerializer(serializers.ModelSerializer):
+    schedule = CustomerHyperlinkCabinet(view_name='cabinets-schedule')
 
-
-class VisitorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('username',)
+        model = Cabinet
+        fields = ('room_number', 'floor', 'place_count', 'tv', 'projector', 'schedule')
 
 
-# TODO: уточнить как будут записываться посетители
 class EventListSerializer(serializers.ModelSerializer):
     start_time = serializers.DateTimeField(label='Дата и время начала')
     end_time = serializers.DateTimeField(label='Дата и время окончания')
-    owner = serializers.SerializerMethodField()
-    url = CustomerHyperlinkEvent(view_name='event-detail')
-
-    @staticmethod
-    def get_owner(obj):
-        return obj.owner.username
+    owner = serializers.StringRelatedField(read_only=True)
+    url = CustomerHyperlinkEvent(view_name='events-detail')
+    cabinet = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Event
         fields = ('id', 'title', 'start_time', 'end_time', 'owner', 'cabinet', 'url')
 
 
-class EventCreateUpdateSerializer(EventListSerializer):
+class EventDetailSerializer(EventListSerializer):
+    visitors = serializers.StringRelatedField(many=True, read_only=True)
+    cabinet = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Event
         fields = ('id', 'title', 'start_time', 'end_time', 'owner', 'cabinet', 'visitors')
 
-class EventDetailSerializer(EventCreateUpdateSerializer):
-    visitors = VisitorSerializer(many=True, read_only=False)
 
-
+class EventCreateUpdateSerializer(EventDetailSerializer):
+    visitors = serializers.PrimaryKeyRelatedField(queryset=User.objects.only('username'), many=True)
+    cabinet = serializers.PrimaryKeyRelatedField(queryset=Cabinet.objects.only('room_number'))
