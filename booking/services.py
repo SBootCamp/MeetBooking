@@ -5,8 +5,9 @@ import typing
 import pytz
 from django.utils import timezone
 
-YEAR_NOW = timezone.now().year
-MONTH_NOW = timezone.now().month
+NOW = timezone.now()
+YEAR_NOW = NOW.year
+MONTH_NOW = NOW.month
 START_TIME = 9
 END_TIME = 21
 STEP_TIME = 30
