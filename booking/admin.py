@@ -6,6 +6,7 @@ from .models import Cabinet, Event
 class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'id', 'cabinet', 'start_time', 'end_time')
     list_filter = ('cabinet',)
+    list_select_related = ('cabinet',)
 
 
 admin.site.register(Cabinet)
