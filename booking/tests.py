@@ -1,6 +1,7 @@
 from datetime import datetime
 import random
 import pytz
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.contrib.auth.models import User
 
@@ -33,7 +34,7 @@ def create_test_event(cabinet):
                 cabinet=cabinet
             )
             print(f'Good {i}')
-        except (IntegrityError, ValueError):
+        except (IntegrityError, ValidationError):
             continue
 
 
