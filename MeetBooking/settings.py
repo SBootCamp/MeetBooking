@@ -106,3 +106,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+START_TIME = 9
+END_TIME = 21
+STEP_TIME = 30

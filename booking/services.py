@@ -5,12 +5,11 @@ import typing
 import pytz
 from django.utils import timezone
 
+from MeetBooking.settings import START_TIME, END_TIME, STEP_TIME
+
 NOW = timezone.now()
 YEAR_NOW = NOW.year
 MONTH_NOW = NOW.month
-START_TIME = 9
-END_TIME = 21
-STEP_TIME = 30
 
 
 def create_time_list(start_time: int, end_time: int, step_time: int) -> typing.List[typing.Tuple[int, int]]:
