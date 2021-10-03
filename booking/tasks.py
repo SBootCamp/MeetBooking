@@ -9,9 +9,9 @@ from django.utils import timezone
 
 from booking.models import Event
 
-#from booking.tasks import send_spam_email
+
 @app.task
-def send_spam_email():
+def send_events_mail():
     now_date = timezone.now()
     end = timezone.now() + timedelta(minutes=32)
 
@@ -33,7 +33,7 @@ def send_spam_email():
                        EMAIL_HOST_USER,
                        email_list)
 
-            send_mass_mail((message, ), fail_silently=False)
+            send_mass_mail((message,))
 
             send_mail(
                 'Напоминание о мероприятии для руководителя',
@@ -44,6 +44,3 @@ def send_spam_email():
                 EMAIL_HOST_USER,
                 [event.owner.email],
             )
-
-#celery -A booking worker -l info
-#celery -A booking beat -l info
