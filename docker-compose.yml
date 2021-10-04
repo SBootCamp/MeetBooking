@@ -7,7 +7,7 @@ services:
     volumes:
       - redis:/var/lib/redis/data
     environment:
-      - REDIS_PASSWORD=password
+      - REDIS_PASSWORD=${password}
   db_booking:
     image: postgres
     ports:
@@ -15,9 +15,9 @@ services:
     volumes:
       - test_postgres-data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admindb
-      - POSTGRES_DB=testdb
+      - POSTGRES_USER=${admin}
+      - POSTGRES_PASSWORD=${admindb}
+      - POSTGRES_DB=${testdb}
 
 volumes:
   redis:
