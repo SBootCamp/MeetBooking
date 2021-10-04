@@ -1,8 +1,11 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 from .models import Cabinet, Event
+from .services import DATE_TIMES_LIST
 
 
 class CustomerHyperlinkCabinet(serializers.HyperlinkedIdentityField):
@@ -43,8 +46,8 @@ class EventListSerializer(serializers.ModelSerializer):
     start_time = serializers.DateTimeField(label='Дата и время начала')
     end_time = serializers.DateTimeField(label='Дата и время окончания')
     owner = serializers.StringRelatedField(read_only=True)
-    url = CustomerHyperlinkEvent(view_name='events-detail')
     cabinet = serializers.StringRelatedField(read_only=True)
+    url = CustomerHyperlinkEvent(view_name='events-detail')
 
     class Meta:
         model = Event
@@ -53,7 +56,6 @@ class EventListSerializer(serializers.ModelSerializer):
 
 class EventDetailSerializer(EventListSerializer):
     visitors = serializers.StringRelatedField(many=True, read_only=True)
-    cabinet = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Event
@@ -63,3 +65,26 @@ class EventDetailSerializer(EventListSerializer):
 class EventCreateUpdateSerializer(EventDetailSerializer):
     visitors = serializers.PrimaryKeyRelatedField(queryset=User.objects.only('username'), many=True)
     cabinet = serializers.PrimaryKeyRelatedField(queryset=Cabinet.objects.only('room_number'))
+    owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    def validate_start_time(self, value):
+        if not value in DATE_TIMES_LIST:
+            raise serializers.ValidationError('Некорректная дата или время начала мероприятия')
+        return value
+
+    def validate_end_time(self, value):
+        if not value in DATE_TIMES_LIST:
+            raise serializers.ValidationError('Некорректная дата или время окончания мероприятия')
+        return value
+
+    def save(self, **kwargs):
+        try:
+            return super().save(**kwargs)
+        except IntegrityError as exp:
+            if 'check_datetime' in str(exp):
+                error_message = 'Время окончания мероприятия должно быть больше начала'
+            else:
+                error_message = 'Указанное время занято'
+            raise serializers.ValidationError(error_message)
+        except ValidationError as exp:
+            raise serializers.ValidationError(exp.messages)
