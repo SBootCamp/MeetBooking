@@ -19,15 +19,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+
     'booking',
     'account_user',
 ]
 DEBUG_APPS = [
     'debug_toolbar',
 ]
-
-if DEBUG:
-    INSTALLED_APPS.extend(DEBUG_APPS)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -38,6 +38,15 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+DEBUG_MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+if DEBUG:
+    INSTALLED_APPS.extend(DEBUG_APPS)
+    MIDDLEWARE.extend(DEBUG_MIDDLEWARE)
+
 
 ROOT_URLCONF = 'MeetBooking.urls'
 INTERNAL_IPS = ['127.0.0.1', ]
@@ -98,6 +107,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+START_TIME = 9
+END_TIME = 21
+STEP_TIME_MINUTES = 30
 
 # REDIS
 REDIS_HOST = os.environ.get('REDIS_HOST', '0.0.0.0')

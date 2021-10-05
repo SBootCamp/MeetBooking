@@ -8,6 +8,14 @@ from django.utils import timezone
 from booking.contrib.postgres.functions import TsTzRange
 
 
+class EventManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset() \
+            .select_related('cabinet', 'owner') \
+            .only('owner__username', 'title', 'cabinet__room_number', 'start_time', 'end_time') \
+            .filter(start_time__month=timezone.now().month)
+
+
 class Cabinet(models.Model):
     # photo = models.ImageField('Фото кабинета', upload_to='static/')
     place_count = models.IntegerField(verbose_name='Всего мест', default=0)
@@ -46,6 +54,8 @@ class Event(models.Model):
         verbose_name='Организатор',
         related_name='event_owner'
     )
+    objects = models.Manager()
+    room_objects = EventManager()
 
     # TODO:add functionality
     def duration(self):
