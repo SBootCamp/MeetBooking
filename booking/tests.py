@@ -4,7 +4,7 @@ import pytz
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.contrib.auth.models import User
-
+from django.contrib.auth.hashers import make_password
 
 from booking.models import Event
 
@@ -51,5 +51,11 @@ USERNAME = [
 
 
 def create_test_user():
-    for name in USERNAME:
-        User.objects.create_user(username=name, password='12345678')
+    User.objects.bulk_create([
+        User(
+            username=name,
+            email='USER@email.ru',
+            password=make_password('12345678'),
+            is_active=True,
+        ) for name in USERNAME
+    ])

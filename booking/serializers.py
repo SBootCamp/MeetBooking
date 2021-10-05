@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 from .models import Cabinet, Event
-from .services import DATE_TIMES_LIST
+from .services import create_datetime_list
 
 
 class CustomerHyperlinkCabinet(serializers.HyperlinkedIdentityField):
@@ -68,12 +68,12 @@ class EventCreateUpdateSerializer(EventDetailSerializer):
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def validate_start_time(self, value):
-        if not value in DATE_TIMES_LIST:
+        if value not in create_datetime_list():
             raise serializers.ValidationError('Некорректная дата или время начала мероприятия')
         return value
 
     def validate_end_time(self, value):
-        if not value in DATE_TIMES_LIST:
+        if value not in create_datetime_list():
             raise serializers.ValidationError('Некорректная дата или время окончания мероприятия')
         return value
 
