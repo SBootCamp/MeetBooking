@@ -49,5 +49,3 @@ class EventViewSet(PermissionMixin, SerializerMixin, ModelViewSet):
         if self.action == 'list':
             return queryset
         return queryset.prefetch_related(Prefetch('visitors', queryset=User.objects.only('username')))
-
-

@@ -110,4 +110,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 START_TIME = 9
 END_TIME = 21
-STEP_TIME = 30
+STEP_TIME_MINUTES = 30
