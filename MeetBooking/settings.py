@@ -111,3 +111,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 START_TIME = 9
 END_TIME = 21
 STEP_TIME_MINUTES = 30
+
+# REDIS
+REDIS_HOST = os.environ.get('REDIS_HOST', '0.0.0.0')
+REDIS_PORT = os.environ.get('REDIS_PORT', '6379')
+CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+# SMTP
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', default=587)
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', default=True)
