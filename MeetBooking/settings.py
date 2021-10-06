@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'booking',
+    'frontend',
 ]
 DEBUG_APPS = [
     'debug_toolbar',
@@ -45,7 +46,6 @@ DEBUG_MIDDLEWARE = [
 if DEBUG:
     INSTALLED_APPS.extend(DEBUG_APPS)
     MIDDLEWARE.extend(DEBUG_MIDDLEWARE)
-
 
 ROOT_URLCONF = 'MeetBooking.urls'
 INTERNAL_IPS = ['127.0.0.1', ]
