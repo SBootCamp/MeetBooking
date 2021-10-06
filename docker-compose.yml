@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3.7'
 services:
   redis:
     image: redis
@@ -10,6 +10,10 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
   db_booking:
     image: postgres
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - test_postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
