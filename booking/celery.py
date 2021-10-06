@@ -2,6 +2,8 @@ import os
 from celery import Celery
 from celery.schedules import crontab
 
+from MeetBooking.settings import STEP_TIME_MINUTES
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'MeetBooking.settings')
 
 app = Celery('booking')
@@ -12,6 +14,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'send-email': {
         'task': 'booking.tasks.send_events_mail',
-        'schedule': crontab(minute='*/30')
+        'schedule': crontab(minute=f'*/{STEP_TIME_MINUTES}')
     }
 }
