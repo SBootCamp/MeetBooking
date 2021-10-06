@@ -1,0 +1,16 @@
+<form method="post" id="booking" action="">
+    {% csrf_token %}
+    {{ form.title.label }}
+    {{ form.title }}
+    {{ form.date.label }}
+    {{ form.date }}
+    {{ form.start_time.label }}
+    {{ form.start_time }}
+    {{ form.end_time.label }}
+    {{ form.end_time }}
+    {{ form.cabinet.label }}
+    {{ form.cabinet }}
+    <div id="errors" class="errors">
+    </div>
+    <input name="submit" value="Забронировать" class="booking-btn" type="submit">
+</form>

@@ -8,28 +8,38 @@
             <div class="col-9">
                 <div class="schedule">
                     <h2>Расписание кабинета</h2>
+                    <table class="table">
+                        <thead>
+                        </thead>
+                        <tbody>
+
+                        {% for dates,times in schedule.items %}
+                            <tr>
+                                <th scope="row">{{ dates }}<br>
+                                </th>
+
+                                {% for time in times %}
+
+                                    <td>
+                                        <button type="button" class="btn btn-light"
+                                                disabled>{{ time }}</button>
+
+
+                                    </td>
+
+
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+
+                    </table>
                 </div>
             </div>
             <div class="col-3">
                 <div class='booking'>
                     <div class="booking-form">
-                        <form method="post" id="booking" action="{% url 'booking' %}">
-                            {% csrf_token %}
-                            {{ form.title.label }}
-                            {{ form.title }}
-                            {{ form.date.label }}
-                            {{ form.date }}
-                            {{ form.start_time.label }}
-                            {{ form.start_time }}
-                            {{ form.end_time.label }}
-                            {{ form.end_time }}
-                            {{ form.cabinet.label }}
-                            {{ form.cabinet }}
-                            <div id="errors" class="errors">
-
-                            </div>
-                            <input name="submit" value="Забронировать" class="booking-btn" type="submit">
-                        </form>
+                        {% include "cabinets/bookinf_form.html" %}
                     </div>
                 </div>
             </div>
@@ -40,7 +50,7 @@
             e.preventDefault();
             $.ajax({
                 type: "POST",
-                url: "{% url 'booking' %}",
+                url: "{% url 'booking' 1 %}",
                 data: {
                     title: $('#id_title').val(),
                     date: $('#id_date').val(),
