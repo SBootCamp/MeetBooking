@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'booking',
+    'frontend',
 ]
 DEBUG_APPS = [
     'debug_toolbar',

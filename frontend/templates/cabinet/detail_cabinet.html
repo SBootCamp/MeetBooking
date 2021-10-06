@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Бронирование кабинетов{% endblock %}
+{% load static %}
+
+{% block content %}
+    <div class='container' style="margin-top: 30px">
+        <div class="row">
+            <div class="col-9">
+                <div class="schedule">
+                    <h2>Расписание кабинета</h2>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class='booking'>
+                    <div class="booking-form">
+                        <form method="post" id="booking" action="{% url 'booking' %}">
+                            {% csrf_token %}
+                            {{ form.title.label }}
+                            {{ form.title }}
+                            {{ form.date.label }}
+                            {{ form.date }}
+                            {{ form.start_time.label }}
+                            {{ form.start_time }}
+                            {{ form.end_time.label }}
+                            {{ form.end_time }}
+                            {{ form.cabinet.label }}
+                            {{ form.cabinet }}
+                            <div id="errors" class="errors">
+
+                            </div>
+                            <input name="submit" value="Забронировать" class="booking-btn" type="submit">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#booking').on('submit', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "{% url 'booking' %}",
+                data: {
+                    title: $('#id_title').val(),
+                    date: $('#id_date').val(),
+                    start_time: $('#id_start_time').val(),
+                    end_time: $('#id_end_time').val(),
+                    cabinet: $('#id_cabinet').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    dataType: "json",
+                },
+                success: function (response) {
+                    $("#booking").trigger("reset");
+                    alert("Вы успешно забронировали время");
+                },
+                error: function (response) {
+                    $('#errors').append(response.responseJSON.errors);
+                }
+            });
+        });
+    </script>
+    {#    <script src="{% static 'js/javascript.js' %}" async></script>#}
+{% endblock %}
