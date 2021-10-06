@@ -10,6 +10,8 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
   db_booking:
     image: postgres
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -17,4 +19,4 @@ services:
     
 volumes:
   redis:
-  test_postgres-data:
+  db_booking:
