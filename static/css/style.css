@@ -13,13 +13,16 @@ body, html {
 }
 
 button:active, button:focus {
-  outline: none;
-}
-button::-moz-focus-inner {
-  border: 0;
+    outline: none;
 }
 
-input, select {outline:none;}
+button::-moz-focus-inner {
+    border: 0;
+}
+
+input, select {
+    outline: none;
+}
 
 .booking-btn {
     border: none;
@@ -58,7 +61,8 @@ input, select {outline:none;}
     margin-left: auto;
     margin-right: auto;
 }
-.errors{
+
+.errors {
     color: red;
 }
 
@@ -91,9 +95,11 @@ input, select {outline:none;}
     display: flex;
     width: 100%;
 }
-.booking-form option{
+
+.booking-form option {
     background: #4488dd;
 }
+
 .schedule {
     width: 100%;
     background: #fff;
@@ -122,4 +128,25 @@ input, select {outline:none;}
     .booking-btn {
         border-radius: 0;
     }
+}
+
+.select-field {
+    vertical-align: top;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+    margin-top: 3px;
+    line-height: 1.5em;
+    font-size: 1rem;
+    padding: 5px 10px 5px 10px;
+    color: #fff;
+    box-sizing: border-box;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.select-field select {
+    padding: 10px;
+    margin: -5px -20px -5px -5px;
 }

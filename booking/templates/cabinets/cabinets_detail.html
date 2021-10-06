@@ -12,27 +12,19 @@
                         <thead>
                         </thead>
                         <tbody>
-
                         {% for dates,times in schedule.items %}
                             <tr>
                                 <th scope="row">{{ dates }}<br>
                                 </th>
-
                                 {% for time in times %}
-
                                     <td>
                                         <button type="button" class="btn btn-light"
                                                 disabled>{{ time }}</button>
-
-
                                     </td>
-
-
                                 {% endfor %}
                             </tr>
                         {% endfor %}
                         </tbody>
-
                     </table>
                 </div>
             </div>
@@ -45,30 +37,30 @@
             </div>
         </div>
     </div>
-    <script>
-        $('#booking').on('submit', function (e) {
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: "{% url 'booking' 1 %}",
-                data: {
-                    title: $('#id_title').val(),
-                    date: $('#id_date').val(),
-                    start_time: $('#id_start_time').val(),
-                    end_time: $('#id_end_time').val(),
-                    cabinet: $('#id_cabinet').val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                    dataType: "json",
-                },
-                success: function (response) {
-                    $("#booking").trigger("reset");
-                    alert("Вы успешно забронировали время");
-                },
-                error: function (response) {
-                    $('#errors').append(response.responseJSON.errors);
-                }
-            });
-        });
-    </script>
+    {#    <script>#}
+    {#        $('#booking').on('submit', function (e) {#}
+    {#            e.preventDefault();#}
+    {#            $.ajax({#}
+    {#                type: "POST",#}
+    {#                url: "{% url 'booking' 1 %}",#}
+    {#                data: {#}
+    {#                    title: $('#id_title').val(),#}
+    {#                    date: $('#id_date').val(),#}
+    {#                    start_time: $('#id_start_time').val(),#}
+    {#                    end_time: $('#id_end_time').val(),#}
+    {#                    cabinet: $('#id_cabinet').val(),#}
+    {#                    csrfmiddlewaretoken: '{{ csrf_token }}',#}
+    {#                    dataType: "json",#}
+    {#                },#}
+    {#                success: function (response) {#}
+    {#                    $("#booking").trigger("reset");#}
+    {#                    alert("Вы успешно забронировали время");#}
+    {#                },#}
+    {#                error: function (response) {#}
+    {#                    $('#errors').append(response.responseJSON.errors);#}
+    {#                }#}
+    {#            });#}
+    {#        });#}
+    {#    </script>#}
     {#    <script src="{% static 'js/javascript.js' %}" async></script>#}
 {% endblock %}
