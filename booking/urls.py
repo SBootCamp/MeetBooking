@@ -9,5 +9,5 @@ router.register("api/cabinets/(?P<room_number>[^/.]+)/events", api_views.EventVi
 urlpatterns = router.urls
 
 urlpatterns += [
-    path("cabinets/<int:pk>/booking", views.BookingView.as_view(), name="booking")
+    path("cabinets/<int:pk>/", views.CabinetDetailView.as_view(), name="booking")
 ]

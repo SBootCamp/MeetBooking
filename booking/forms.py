@@ -1,12 +1,14 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.db import IntegrityError
 
-from booking.models import Event, Cabinet
+from booking.models import Event
 from booking.services import create_date_choices, create_time_choices
 
 BLANK_CHOICE = (('', '----'),)
 
 
-class BookingForm(forms.ModelForm):
+class EventForm(forms.ModelForm):
     title = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'input-field',
@@ -34,15 +36,32 @@ class BookingForm(forms.ModelForm):
         choices=BLANK_CHOICE + create_date_choices(),
         label='Выберите дату'
     )
-    cabinet = forms.ModelChoiceField(
-        widget=forms.Select(attrs={
-            'class': 'input-field',
+    visitors = forms.ModelMultipleChoiceField(
+        widget=forms.SelectMultiple(attrs={
+            'class': 'select-field',
         }),
-        queryset=Cabinet.objects.all(),
-        empty_label='----',
-        label='Выберите кабинет'
+        queryset=User.objects.only('username'),
+        label='Кого пригласить'
     )
 
     class Meta:
         model = Event
-        fields = ('title', 'date', 'start_time', 'end_time', 'cabinet')
+        fields = ('title', 'start_time', 'end_time')
+
+    def clean(self):
+        data = self.cleaned_data
+        date = data['date']
+        data['start_time'] = f"{date}T{data['start_time']}Z"
+        data['end_time'] = f"{date}T{data['end_time']}Z"
+        return data
+
+    def save(self, *args, **kwargs):
+        try:
+            event = super().save(*args, **kwargs)
+            return event
+        except IntegrityError as exp:
+            if 'check_datetime' in str(exp):
+                error_message = 'Время окончания мероприятия должно быть больше начала'
+            else:
+                error_message = 'Указанное время занято'
+            raise forms.ValidationError(error_message)

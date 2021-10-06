@@ -1,2 +1,2 @@
 from .cabinet_list_view import CabinetListView
-from .booking_view import BookingView
+from .cabinet_detail_view import CabinetDetailView
