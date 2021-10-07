@@ -1,3 +1,4 @@
+{% load tz %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -82,8 +83,8 @@
                         <h2>Здравствуйте!</h2>
 
                         <p>
-                            Мероприятие "{{ event_title }}" начнется {{ event_start_time }}
-                            и будет длиться до {{ event_end_time }}, в кабинете №{{ event_cabinet }}
+                            Мероприятие "{{ event_title }}" начнется {{ event_start_time|timezone:"Europe/Moscow" }}
+                            и будет длиться до {{ event_end_time|timezone:"Europe/Moscow" }}, в кабинете №{{ event_cabinet }}
                             на {{ event_cabinet_floor }} этаже
                         </p>
 
