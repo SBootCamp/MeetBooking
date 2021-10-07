@@ -12,6 +12,8 @@ services:
     image: postgres
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -19,3 +21,6 @@ services:
     
 volumes:
   redis:
+    name: redis
+  db_booking:
+    name: db_booking
