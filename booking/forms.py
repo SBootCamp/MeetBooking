@@ -55,13 +55,4 @@ class EventForm(forms.ModelForm):
         data['end_time'] = f"{date}T{data['end_time']}Z"
         return data
 
-    def save(self, *args, **kwargs):
-        try:
-            event = super().save(*args, **kwargs)
-            return event
-        except IntegrityError as exp:
-            if 'check_datetime' in str(exp):
-                error_message = 'Время окончания мероприятия должно быть больше начала'
-            else:
-                error_message = 'Указанное время занято'
-            raise forms.ValidationError(error_message)
+
