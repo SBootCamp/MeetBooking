@@ -10,22 +10,26 @@
                     <h2>Расписание кабинета</h2>
                     <table class="table">
                         <thead>
+                        <tr>
+                            {% for date in schedule|slice:":7" %}
+                                <th scope="col">{{ date.keys }}</th>
+                            {% endfor %}
+                        </tr>
                         </thead>
                         <tbody>
-                        {% for dates,times in schedule.items %}
+                        {% for date_time in schedule|slice:":7" %}
                             <tr>
-                                <th scope="row">{{ dates }}<br>
-                                </th>
-                                {% for time in times %}
-                                    <td>
-                                        <button type="button" class="btn btn-light"
-                                                disabled>{{ time }}</button>
-                                    </td>
+                                {% for date,times in date_time.items %}
+                                    {% for time,event in times.items %}
+                                        <td>{{ time }}</td>
+                                    {% endfor %}
                                 {% endfor %}
                             </tr>
                         {% endfor %}
                         </tbody>
+
                     </table>
+
                 </div>
             </div>
             <div class="col-3">
@@ -37,6 +41,20 @@
             </div>
         </div>
     </div>
+    {#                        <tbody>#}
+    {#                        {% for dates,times in schedule.items %}#}
+    {#                            <tr>#}
+    {#                                <th scope="row">{{ dates }}<br>#}
+    {#                                </th>#}
+    {#                                {% for time in times %}#}
+    {#                                    <td>#}
+    {#                                        <button type="button" class="btn btn-light"#}
+    {#                                                disabled>{{ time }}</button>#}
+    {#                                    </td>#}
+    {#                                {% endfor %}#}
+    {#                            </tr>#}
+    {#                        {% endfor %}#}
+    {#                        </tbody>#}
     {#    <script>#}
     {#        $('#booking').on('submit', function (e) {#}
     {#            e.preventDefault();#}
