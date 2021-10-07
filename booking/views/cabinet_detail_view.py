@@ -23,8 +23,7 @@ class CabinetDetailView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         event = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('pk')).values()
-        schedule = create_schedule(event)
-        context['schedule'] = [{key: value} for key, value in schedule.items()]
+        context['schedule'] = create_schedule(event)
         context['cabinet'] = self.get_object()
         return context
 

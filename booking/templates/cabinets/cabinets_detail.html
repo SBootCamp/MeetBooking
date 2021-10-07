@@ -8,28 +8,20 @@
             <div class="col-9">
                 <div class="schedule">
                     <h2>Расписание кабинета</h2>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            {% for date in schedule|slice:":7" %}
-                                <th scope="col">{{ date.keys }}</th>
+                        <div class="row row-cols-7">
+                            {% for date_time in schedule|slice:":7" %}
+                                <div class="col">
+                                    <ul class="datetime-ul">
+                                        {% for date,times in date_time.items %}
+                                            <li class="datetime-li">{{ date }}</li>
+                                            {% for time,event in times.items %}
+                                                <li class="datetime-li">{{ time }}</li>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
                             {% endfor %}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for date_time in schedule|slice:":7" %}
-                            <tr>
-                                {% for date,times in date_time.items %}
-                                    {% for time,event in times.items %}
-                                        <td>{{ time }}</td>
-                                    {% endfor %}
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-
-                    </table>
-
+                        </div>
                 </div>
             </div>
             <div class="col-3">
@@ -41,20 +33,6 @@
             </div>
         </div>
     </div>
-    {#                        <tbody>#}
-    {#                        {% for dates,times in schedule.items %}#}
-    {#                            <tr>#}
-    {#                                <th scope="row">{{ dates }}<br>#}
-    {#                                </th>#}
-    {#                                {% for time in times %}#}
-    {#                                    <td>#}
-    {#                                        <button type="button" class="btn btn-light"#}
-    {#                                                disabled>{{ time }}</button>#}
-    {#                                    </td>#}
-    {#                                {% endfor %}#}
-    {#                            </tr>#}
-    {#                        {% endfor %}#}
-    {#                        </tbody>#}
     {#    <script>#}
     {#        $('#booking').on('submit', function (e) {#}
     {#            e.preventDefault();#}
