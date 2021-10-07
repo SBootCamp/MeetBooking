@@ -113,9 +113,10 @@ END_TIME = 21
 STEP_TIME_MINUTES = 30
 
 # REDIS
-REDIS_HOST = os.environ.get('REDIS_HOST', '0.0.0.0/0')
+REDIS_HOST = os.environ.get('REDIS_HOST', '0.0.0.0')
 REDIS_PORT = os.environ.get('REDIS_PORT', '6379')
-CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT
+REDIS_DB = os.environ.get('REDIS_DB', '0')
+CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/' + REDIS_DB
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
 # SMTP
