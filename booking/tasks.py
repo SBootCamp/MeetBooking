@@ -12,12 +12,13 @@ from datetime import timedelta
 from django.utils import timezone
 from booking.models import Event
 
+
 @app.task
 def send_events_mail():
     now_date = timezone.now()
     end = timezone.now() + timedelta(minutes=settings.STEP_TIME_MINUTES)
 
-    event_list = Event.objects.prefetch_related(Prefetch('visitors', queryset=User.objects.only('email', 'username')))\
+    event_list = Event.objects.prefetch_related(Prefetch('visitors', queryset=User.objects.only('email', 'username'))) \
         .filter(start_time__gt=now_date, start_time__lte=end) \
         .select_related('cabinet',
                         'owner', )
