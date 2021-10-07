@@ -1,5 +1,6 @@
 from zoneinfo import ZoneInfo
 
+from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 
@@ -16,14 +17,14 @@ def send_events_mail():
     now_date = timezone.now()
     end = timezone.now() + timedelta(minutes=settings.STEP_TIME_MINUTES)
 
-    event_list = Event.objects.filter(start_time__gt=now_date, start_time__lte=end) \
+    event_list = Event.objects.Prefetch('visitors', queryset=User.objects.only('email', 'username'))\
+        .filter(start_time__gt=now_date, start_time__lte=end) \
         .select_related('cabinet',
-                        'owner',
-                        'cabinet')
+                        'owner', )
 
     for event in event_list:
-        email_list = list(event.visitors.values_list('email', flat=True))
-        username_list = list(event.visitors.values_list('username', flat=True))
+        email_list = [visitors.email for visitors in event.visitors.all()]
+        username_list = [visitors.username for visitors in event.visitors.all()]
 
         visitors_message = render_to_string(
             'visitors_message.html',
