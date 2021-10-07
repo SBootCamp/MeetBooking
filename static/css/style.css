@@ -105,8 +105,12 @@ input, select {
     background: #fff;
     border-radius: 30px;
     padding: 10px;
+    height: 600px;
+    overflow-x: scroll;
+    overflow-y: scroll;
 
 }
+
 
 .schedule h2 {
     text-align: left;
@@ -149,4 +153,22 @@ input, select {
 .select-field select {
     padding: 10px;
     margin: -5px -20px -5px -5px;
+}
+
+.datetime-ul {
+    list-style: none;
+    padding: 0;
+}
+
+.datetime-li {
+    padding: 10px 30px;
+    border-bottom: 1px solid grey;
+    color: #506a6b;
+    font-size: 15px;
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, .2);
+    margin-bottom: 5px;
+}
+
+.datetime-li:last-child {
+    border-bottom: none;
 }
