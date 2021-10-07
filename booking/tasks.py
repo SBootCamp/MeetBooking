@@ -10,6 +10,7 @@ from datetime import timedelta
 from django.utils import timezone
 from booking.models import Event
 
+
 @app.task
 def send_events_mail():
     now_date = timezone.now()
@@ -35,14 +36,12 @@ def send_events_mail():
             }
         )
 
-
         # Письма для посетителей мероприятия
         send_mail('Напоминание о начале мероприятия',
                   'Через 30 минут начало мероприятия',
                   settings.EMAIL_HOST_USER,
                   email_list,
                   html_message=visitors_message)
-
 
         owner_message = render_to_string(
             'owner_message.html',
@@ -55,7 +54,6 @@ def send_events_mail():
                 'event_cabinet_floor': event.cabinet.floor,
             }
         )
-
 
         # Письмо для руководителя
         send_mail(
