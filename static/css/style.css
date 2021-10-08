@@ -105,10 +105,16 @@ input, select {
     background: #fff;
     border-radius: 30px;
     padding: 10px;
-    height: 600px;
+
+
+
+}
+.schedule-body{
     overflow-x: scroll;
     overflow-y: scroll;
-
+    height: 600px;
+    width: 100%;
+    background: #fff;
 }
 
 
@@ -160,15 +166,13 @@ input, select {
     padding: 0;
 }
 
-.datetime-li {
-    padding: 10px 30px;
-    border-bottom: 1px solid grey;
+.time-li {
+    padding: 10px 10px;
     color: #506a6b;
     font-size: 15px;
     box-shadow: 0 5px 5px 0 rgba(0, 0, 0, .2);
     margin-bottom: 5px;
+    text-align: center;
+    border-radius: 4px;
 }
 
-.datetime-li:last-child {
-    border-bottom: none;
-}

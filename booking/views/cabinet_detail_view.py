@@ -1,5 +1,4 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import render
 from django.views.generic import CreateView
@@ -39,4 +38,4 @@ class CabinetDetailView(LoginRequiredMixin, CreateView):
             else:
                 form.add_error(None, 'Указанное время занято')
             return render(self.request, 'cabinets/cabinets_detail.html', self.get_context_data(form=form))
-        return render(self.request, 'cabinets/cabinets_detail.html')
+        return render(self.request, 'cabinets/cabinets_detail.html',self.get_context_data())
