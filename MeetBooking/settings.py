@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from distutils.util import strtobool
 
 load_dotenv('.env')
 
@@ -10,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1').split(' ')
-DEBUG = os.environ.get('DEBUG', default=True)
+DEBUG = bool(strtobool(os.getenv('DEBUG')))
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,7 +46,6 @@ DEBUG_MIDDLEWARE = [
 if DEBUG:
     INSTALLED_APPS.extend(DEBUG_APPS)
     MIDDLEWARE.extend(DEBUG_MIDDLEWARE)
-
 
 ROOT_URLCONF = 'MeetBooking.urls'
 INTERNAL_IPS = ['127.0.0.1', ]
@@ -106,7 +106,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 START_TIME = 9
 END_TIME = 21
