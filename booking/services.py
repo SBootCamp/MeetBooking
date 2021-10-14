@@ -1,7 +1,7 @@
 import calendar
 import copy
 import datetime
-from typing import List, Any
+from typing import Any
 import pytz
 from django.utils import timezone
 
@@ -30,7 +30,7 @@ def create_datetime_dict(dates: list, times: list) -> dict[str, dict[str, None]]
     return {str(date.date()): {str(datetime.time(*time)): None for time in times} for date in dates}
 
 
-def create_datetime_list() -> List[datetime.datetime]:
+def create_datetime_list() -> list[datetime.datetime]:
     times, dates = get_times_and_dates()
     return [date + datetime.timedelta(hours=hours, minutes=minutes) for date in dates for hours, minutes in times]
 
