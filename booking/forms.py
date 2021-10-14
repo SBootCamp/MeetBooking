@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.db import IntegrityError
 
 from booking.models import Event
 from booking.services import create_date_choices, create_time_choices
@@ -41,7 +40,8 @@ class EventForm(forms.ModelForm):
             'class': 'select-field',
         }),
         queryset=User.objects.only('username'),
-        label='Кого пригласить'
+        label='Кого пригласить',
+        required=False,
     )
 
     class Meta:
@@ -54,5 +54,3 @@ class EventForm(forms.ModelForm):
         data['start_time'] = f"{date}T{data['start_time']}Z"
         data['end_time'] = f"{date}T{data['end_time']}Z"
         return data
-
-
