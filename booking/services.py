@@ -1,11 +1,9 @@
 import calendar
-import copy
 import datetime
 from typing import Any
 import pytz
 from django.utils import timezone
-
-from MeetBooking.settings import START_TIME, END_TIME, STEP_TIME_MINUTES
+from django.conf import settings
 
 
 def create_time_list(start_time: int, end_time: int, step_time_minutes: int) -> list[tuple[int, int]]:
@@ -22,11 +20,11 @@ def create_date_list(year: int, month: int) -> list[datetime.datetime]:
 
 def get_times_and_dates() -> tuple[list, list]:
     dates = create_date_list(timezone.now().year, timezone.now().month)
-    times = create_time_list(START_TIME, END_TIME, STEP_TIME_MINUTES)
+    times = create_time_list(settings.START_TIME, settings.END_TIME, settings.STEP_TIME_MINUTES)
     return times, dates
 
 
-def create_datetime_dict(dates: list, times: list) -> dict[str, dict[str, None]]:
+def create_datetime_dict(dates: list, times: list) -> dict[str:dict[str:None]]:
     return {str(date.date()): {str(datetime.time(*time)): None for time in times} for date in dates}
 
 
@@ -47,10 +45,9 @@ def create_time_choices() -> tuple[tuple[datetime.time, datetime.time]]:
     return time_choices
 
 
-def create_schedule(events: list[dict]) -> list[dict[str, dict[str, None or dict]]]:
+def create_schedule(events: list[dict]) -> list[dict[str:dict[str:None or dict]]]:
     times, dates = get_times_and_dates()
-    date_times_dict = create_datetime_dict(dates, times)
-    schedule = copy.deepcopy(date_times_dict)
+    schedule = create_datetime_dict(dates, times)
     for event in events:
         start_time = event['start_time']
         end_time = event['end_time']
@@ -58,5 +55,5 @@ def create_schedule(events: list[dict]) -> list[dict[str, dict[str, None or dict
             date = str(start_time.date())
             time = str(start_time.time())
             schedule[date][time] = event
-            start_time += datetime.timedelta(minutes=STEP_TIME_MINUTES)
+            start_time += datetime.timedelta(minutes=settings.STEP_TIME_MINUTES)
     return [{key: value} for key, value in schedule.items()]

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% block title %}Бронирование кабинетов{% endblock %}
+{% block title %}Бронирование мероприятий{% endblock %}
 {% load static %}
 
 {% block content %}
-    <div class='container' style="margin-top: 30px">
+    <div class="container cabinet">
         <div class="row">
             <div class="col-9">
                 <div class="schedule">
@@ -15,22 +15,7 @@
                                 <div class="schedule-body">
                                     <div class="row row-cols-7">
                                         {% for date_time in schedule|slice:"0:7" %}
-                                            <div class="col" style="padding-right: 0; padding-left: 12px">
-                                                <ul class="datetime-ul">
-                                                    {% for date,times in date_time.items %}
-                                                        <li class="date-li">{{ date }}</li>
-                                                        {% for time,event in times.items %}
-                                                            {% if event %}
-                                                                <li class="time-li"
-                                                                    style="background: red; color: white">{{ time }}</li>
-                                                            {% else %}
-                                                                <li class="time-li"
-                                                                    style="background: forestgreen; color: white">{{ time }}</li>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
+                                            {% include 'cabinets/carousel_item.html' %}
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -39,22 +24,7 @@
                                 <div class="schedule-body">
                                     <div class="row row-cols-7">
                                         {% for date_time in schedule|slice:"7:14" %}
-                                            <div class="col" style="padding-right: 0; padding-left: 12px">
-                                                <ul class="datetime-ul">
-                                                    {% for date,times in date_time.items %}
-                                                        <li class="date-li">{{ date }}</li>
-                                                        {% for time,event in times.items %}
-                                                            {% if event %}
-                                                                <li class="time-li"
-                                                                    style="background: red; color: white">{{ time }}</li>
-                                                            {% else %}
-                                                                <li class="time-li"
-                                                                    style="background: forestgreen; color: white">{{ time }}</li>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
+                                            {% include 'cabinets/carousel_item.html' %}
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -63,22 +33,7 @@
                                 <div class="schedule-body">
                                     <div class="row row-cols-7">
                                         {% for date_time in schedule|slice:"14:21" %}
-                                            <div class="col" style="padding-right: 0; padding-left: 12px">
-                                                <ul class="datetime-ul">
-                                                    {% for date,times in date_time.items %}
-                                                        <li class="date-li">{{ date }}</li>
-                                                        {% for time,event in times.items %}
-                                                            {% if event %}
-                                                                <li class="time-li"
-                                                                    style="background: red; color: white">{{ time }}</li>
-                                                            {% else %}
-                                                                <li class="time-li"
-                                                                    style="background: forestgreen; color: white">{{ time }}</li>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
+                                            {% include 'cabinets/carousel_item.html' %}
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -87,22 +42,7 @@
                                 <div class="schedule-body">
                                     <div class="row row-cols-7">
                                         {% for date_time in schedule|slice:"21:28" %}
-                                            <div class="col" style="padding-right: 0; padding-left: 12px">
-                                                <ul class="datetime-ul">
-                                                    {% for date,times in date_time.items %}
-                                                        <li class="date-li">{{ date }}</li>
-                                                        {% for time,event in times.items %}
-                                                            {% if event %}
-                                                                <li class="time-li"
-                                                                    style="background: red; color: white">{{ time }}</li>
-                                                            {% else %}
-                                                                <li class="time-li"
-                                                                    style="background: forestgreen; color: white">{{ time }}</li>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
+                                            {% include 'cabinets/carousel_item.html' %}
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -111,28 +51,13 @@
                                 <div class="schedule-body">
                                     <div class="row row-cols-7">
                                         {% for date_time in schedule|slice:"28:" %}
-                                            <div class="col" style="padding-right: 0; padding-left: 12px">
-                                                <ul class="datetime-ul">
-                                                    {% for date,times in date_time.items %}
-                                                        <li class="date-li">{{ date }}</li>
-                                                        {% for time,event in times.items %}
-                                                            {% if event %}
-                                                                <li class="time-li"
-                                                                    style="background: red; color: white">{{ time }}</li>
-                                                            {% else %}
-                                                                <li class="time-li"
-                                                                    style="background: forestgreen; color: white">{{ time }}</li>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
+                                            {% include 'cabinets/carousel_item.html' %}
                                         {% endfor %}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <button class="carousel-control-prev" style="margin-right: 100px" type="button"
+                        <button class="carousel-control-prev" type="button"
                                 data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Предыдущий</span>
@@ -143,7 +68,6 @@
                             <span class="visually-hidden">Следующий</span>
                         </button>
                     </div>
-
                 </div>
             </div>
             <div class="col-3">
@@ -155,4 +79,5 @@
             </div>
         </div>
     </div>
+
 {% endblock %}

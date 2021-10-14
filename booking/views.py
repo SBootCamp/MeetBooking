@@ -1,6 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import CreateView
 from django.db import IntegrityError
 
@@ -14,15 +13,12 @@ class CabinetDetailView(LoginRequiredMixin, CreateView):
     template_name = 'cabinets/cabinets_detail.html'
 
     def get_object(self, *args, **kwargs):
-        try:
-            return Cabinet.objects.get(room_number=self.kwargs.get('pk'))
-        except Cabinet.DoesNotExist:
-            raise Http404
+        return get_object_or_404(Cabinet, room_number=self.kwargs.get('pk'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        event = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('pk')).values()
-        context['schedule'] = create_schedule(event)
+        events = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('pk')).values()
+        context['schedule'] = create_schedule(events)
         context['cabinet'] = self.get_object()
         return context
 
@@ -32,6 +28,7 @@ class CabinetDetailView(LoginRequiredMixin, CreateView):
         new_event.cabinet = self.get_object()
         try:
             new_event.save()
+            form.save_m2m()
         except IntegrityError as exp:
             if 'check_datetime' in str(exp):
                 form.add_error(None, 'Время окончания мероприятия должно быть больше начала')

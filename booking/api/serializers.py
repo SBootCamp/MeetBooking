@@ -4,8 +4,8 @@ from rest_framework.reverse import reverse
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
-from .models import Cabinet, Event
-from .services import create_datetime_list
+from booking.models import Cabinet, Event
+from booking.services import create_datetime_list
 
 
 class CustomerHyperlinkCabinet(serializers.HyperlinkedIdentityField):

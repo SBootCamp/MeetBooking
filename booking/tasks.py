@@ -1,13 +1,11 @@
 from zoneinfo import ZoneInfo
-
 from django.contrib.auth.models import User
 from django.db.models import Prefetch
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
-
 from django.conf import settings
 
-from booking.celery import app
+from MeetBooking.celery import app
 from datetime import timedelta
 from django.utils import timezone
 from booking.models import Event

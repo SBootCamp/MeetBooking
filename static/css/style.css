@@ -2,7 +2,13 @@ body, html {
     height: 100%;
     margin: 0;
 }
-
+.cabinet {
+    margin-top: 30px;
+}
+.col{
+    padding-right: 0;
+    padding-left: 12px;
+}
 #bg {
     background-size: 1800px 900px;
     background-repeat: no-repeat;
@@ -23,7 +29,12 @@ button::-moz-focus-inner {
 input, select {
     outline: none;
 }
-
+.open{
+    background: red;
+}
+.close{
+    background: forestgreen;
+}
 .booking-btn {
     border: none;
     background: #22b877;
@@ -164,6 +175,7 @@ input, select {
 .datetime-ul {
     list-style: none;
     padding: 0;
+    color: white;
 }
 
 .date-li {
@@ -178,7 +190,7 @@ input, select {
 }
 .time-li {
     padding: 10px 10px;
-    color: #506a6b;
+    color: white;
     font-size: 15px;
     box-shadow: 0 5px 5px 0 rgba(0, 0, 0, .2);
     margin-bottom: 5px;
