@@ -3,7 +3,6 @@
 {% load static %}
 <head>
     <title> {% block title %} {% endblock %}</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
@@ -24,37 +23,27 @@
             <a href="#" class="navbar-brand d-flex align-items-center">
                 <strong>Компания</strong>
             </a><strong>
-<!--            <ul class="menu-ul">-->
-<!--                <li class="menu-li"><a class="menu-a" href="#">Главная</a></li>-->
-<!--            </ul>-->
             {% if user.is_authenticated %}
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <a class="btn btn-outline-secondary" href="#">{{ user.username}} </a>
-                <a class="btn btn-outline-secondary" href="#">Выход </a>
-            </div>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <a class="btn btn-outline-secondary" href="#">{{ user.username }} </a>
+                    <a class="btn btn-outline-secondary" href="#">Выход </a>
+                </div>
             {% else %}
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <a class="btn btn-outline-secondary" href="#">Войти </a>
-                <a class="btn btn-outline-secondary" href="#">Регистрация </a>
-            </div>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <a class="btn btn-outline-secondary" href="#">Войти </a>
+                    <a class="btn btn-outline-secondary" href="#">Регистрация </a>
+                </div>
             {% endif %}
         </strong>
         </div>
     </div>
-
 </header>
-
-<body id = 'bg'>
+<body id='bg'>
 {% block content %}{% endblock %}
-
 <footer class="text-muted py-5">
     <div class="container">
-        <p class="float-end mb-1">
-            <a href="#">Наверх</a>
-        </p>
-
+        <p class="float-end mb-1"><a href="#">Наверх</a></p>
     </div>
 </footer>
-
 </body>
 </html>

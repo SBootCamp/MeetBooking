@@ -8,7 +8,8 @@
             <div class="col-9">
                 <div class="schedule">
                     <h2>Расписание кабинета</h2>
-                    <div id="carouselExampleControls" class="carousel slide" data-bs-interval="false" data-bs-ride="carousel">
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-interval="false"
+                         data-bs-ride="carousel">
                         <div class="carousel-inner">
                             <div class="carousel-item active">
                                 <div class="schedule-body">
@@ -145,8 +146,6 @@
 
                 </div>
             </div>
-
-
             <div class="col-3">
                 <div class='booking'>
                     <div class="booking-form">
@@ -156,30 +155,4 @@
             </div>
         </div>
     </div>
-    {#    <script>#}
-    {#        $('#booking').on('submit', function (e) {#}
-    {#            e.preventDefault();#}
-    {#            $.ajax({#}
-    {#                type: "POST",#}
-    {#                url: "{% url 'booking' 1 %}",#}
-    {#                data: {#}
-    {#                    title: $('#id_title').val(),#}
-    {#                    date: $('#id_date').val(),#}
-    {#                    start_time: $('#id_start_time').val(),#}
-    {#                    end_time: $('#id_end_time').val(),#}
-    {#                    cabinet: $('#id_cabinet').val(),#}
-    {#                    csrfmiddlewaretoken: '{{ csrf_token }}',#}
-    {#                    dataType: "json",#}
-    {#                },#}
-    {#                success: function (response) {#}
-    {#                    $("#booking").trigger("reset");#}
-    {#                    alert("Вы успешно забронировали время");#}
-    {#                },#}
-    {#                error: function (response) {#}
-    {#                    $('#errors').append(response.responseJSON.errors);#}
-    {#                }#}
-    {#            });#}
-    {#        });#}
-    {#    </script>#}
-    {#    <script src="{% static 'js/javascript.js' %}" async></script>#}
 {% endblock %}
