@@ -38,4 +38,4 @@ class CabinetDetailView(LoginRequiredMixin, CreateView):
             else:
                 form.add_error(None, 'Указанное время занято')
             return render(self.request, 'cabinets/cabinets_detail.html', self.get_context_data(form=form))
-        return render(self.request, 'cabinets/cabinets_detail.html',self.get_context_data())
+        return render(self.request, 'cabinets/cabinets_detail.html', self.get_context_data())

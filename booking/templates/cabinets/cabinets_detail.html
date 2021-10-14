@@ -8,28 +8,141 @@
             <div class="col-9">
                 <div class="schedule">
                     <h2>Расписание кабинета</h2>
-                    <div class="schedule-body">
-                        <div class="row row-cols-7">
-                            {% for date_time in schedule|slice:"21:28" %}
-                                <div class="col" style="padding-right: 0; padding-left: 12px">
-                                    <ul class="datetime-ul">
-                                        {% for date,times in date_time.items %}
-                                            <li class="date-li">{{ date}}</li>
-                                            {% for time,event in times.items %}
-                                                {% if event %}
-                                                    <li class="time-li"
-                                                        style="background: red; color: white">{{ time }}</li>
-                                                {% else %}
-                                                    <li class="time-li"
-                                                        style="background: forestgreen; color: white">{{ time }}</li>
-                                                {% endif %}
-                                            {% endfor %}
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-interval="false" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="schedule-body">
+                                    <div class="row row-cols-7">
+                                        {% for date_time in schedule|slice:"0:7" %}
+                                            <div class="col" style="padding-right: 0; padding-left: 12px">
+                                                <ul class="datetime-ul">
+                                                    {% for date,times in date_time.items %}
+                                                        <li class="date-li">{{ date }}</li>
+                                                        {% for time,event in times.items %}
+                                                            {% if event %}
+                                                                <li class="time-li"
+                                                                    style="background: red; color: white">{{ time }}</li>
+                                                            {% else %}
+                                                                <li class="time-li"
+                                                                    style="background: forestgreen; color: white">{{ time }}</li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
                                         {% endfor %}
-                                    </ul>
+                                    </div>
                                 </div>
-                            {% endfor %}
+                            </div>
+                            <div class="carousel-item">
+                                <div class="schedule-body">
+                                    <div class="row row-cols-7">
+                                        {% for date_time in schedule|slice:"7:14" %}
+                                            <div class="col" style="padding-right: 0; padding-left: 12px">
+                                                <ul class="datetime-ul">
+                                                    {% for date,times in date_time.items %}
+                                                        <li class="date-li">{{ date }}</li>
+                                                        {% for time,event in times.items %}
+                                                            {% if event %}
+                                                                <li class="time-li"
+                                                                    style="background: red; color: white">{{ time }}</li>
+                                                            {% else %}
+                                                                <li class="time-li"
+                                                                    style="background: forestgreen; color: white">{{ time }}</li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="schedule-body">
+                                    <div class="row row-cols-7">
+                                        {% for date_time in schedule|slice:"14:21" %}
+                                            <div class="col" style="padding-right: 0; padding-left: 12px">
+                                                <ul class="datetime-ul">
+                                                    {% for date,times in date_time.items %}
+                                                        <li class="date-li">{{ date }}</li>
+                                                        {% for time,event in times.items %}
+                                                            {% if event %}
+                                                                <li class="time-li"
+                                                                    style="background: red; color: white">{{ time }}</li>
+                                                            {% else %}
+                                                                <li class="time-li"
+                                                                    style="background: forestgreen; color: white">{{ time }}</li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="schedule-body">
+                                    <div class="row row-cols-7">
+                                        {% for date_time in schedule|slice:"21:28" %}
+                                            <div class="col" style="padding-right: 0; padding-left: 12px">
+                                                <ul class="datetime-ul">
+                                                    {% for date,times in date_time.items %}
+                                                        <li class="date-li">{{ date }}</li>
+                                                        {% for time,event in times.items %}
+                                                            {% if event %}
+                                                                <li class="time-li"
+                                                                    style="background: red; color: white">{{ time }}</li>
+                                                            {% else %}
+                                                                <li class="time-li"
+                                                                    style="background: forestgreen; color: white">{{ time }}</li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="schedule-body">
+                                    <div class="row row-cols-7">
+                                        {% for date_time in schedule|slice:"28:" %}
+                                            <div class="col" style="padding-right: 0; padding-left: 12px">
+                                                <ul class="datetime-ul">
+                                                    {% for date,times in date_time.items %}
+                                                        <li class="date-li">{{ date }}</li>
+                                                        {% for time,event in times.items %}
+                                                            {% if event %}
+                                                                <li class="time-li"
+                                                                    style="background: red; color: white">{{ time }}</li>
+                                                            {% else %}
+                                                                <li class="time-li"
+                                                                    style="background: forestgreen; color: white">{{ time }}</li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                        <button class="carousel-control-prev" style="margin-right: 100px" type="button"
+                                data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Предыдущий</span>
+                        </button>
+                        <button class="carousel-control-next" type="button"
+                                data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Следующий</span>
+                        </button>
                     </div>
+
                 </div>
             </div>
 
