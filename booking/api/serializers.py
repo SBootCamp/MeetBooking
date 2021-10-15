@@ -12,7 +12,7 @@ class CustomerHyperlinkCabinet(serializers.HyperlinkedIdentityField):
 
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            'pk': obj.room_number,
+            'pk': obj.name,
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
 
@@ -20,7 +20,7 @@ class CustomerHyperlinkCabinet(serializers.HyperlinkedIdentityField):
 class CustomerHyperlinkEvent(serializers.HyperlinkedIdentityField):
     def get_url(self, obj, view_name, request, format):
         url_kwargs = {
-            'room_number': obj.cabinet.room_number,
+            'name': obj.cabinet.name,
             'pk': obj.id
         }
         return reverse(view_name, kwargs=url_kwargs, request=request, format=format)
@@ -31,7 +31,7 @@ class CabinetListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cabinet
-        fields = ('room_number', 'floor', 'place_count', 'tv', 'projector', 'url')
+        fields = ('room_number', 'name', 'floor', 'place_count', 'tv', 'projector', 'url')
 
 
 class CabinetDetailSerializer(serializers.ModelSerializer):
@@ -39,7 +39,7 @@ class CabinetDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cabinet
-        fields = ('room_number', 'floor', 'place_count', 'tv', 'projector', 'schedule')
+        fields = ('room_number', 'name', 'floor', 'place_count', 'tv', 'projector', 'schedule')
 
 
 class EventListSerializer(serializers.ModelSerializer):
@@ -64,7 +64,7 @@ class EventDetailSerializer(EventListSerializer):
 
 class EventCreateUpdateSerializer(EventDetailSerializer):
     visitors = serializers.PrimaryKeyRelatedField(queryset=User.objects.only('username'), many=True)
-    cabinet = serializers.PrimaryKeyRelatedField(queryset=Cabinet.objects.only('room_number'))
+    cabinet = serializers.PrimaryKeyRelatedField(queryset=Cabinet.objects.only('name'))
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     def validate_start_time(self, value):

@@ -14,11 +14,11 @@ class CabinetDetailView(LoginRequiredMixin, CreateView):
     template_name = 'cabinets/cabinets_detail.html'
 
     def get_object(self, *args, **kwargs):
-        return get_object_or_404(Cabinet, room_number=self.kwargs.get('pk'))
+        return get_object_or_404(Cabinet, name=self.kwargs.get('pk'))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        events = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('pk')).values()
+        events = Event.room_objects.filter(cabinet__name=self.kwargs.get('pk')).values()
         schedule = Paginator(create_schedule(events), 7)
         context['schedule'] = schedule
         context['cabinet'] = self.get_object()
