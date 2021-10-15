@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import CreateView
 from django.db import IntegrityError
@@ -18,7 +19,8 @@ class CabinetDetailView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         events = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('pk')).values()
-        context['schedule'] = create_schedule(events)
+        schedule = Paginator(create_schedule(events), 7)
+        context['schedule'] = schedule
         context['cabinet'] = self.get_object()
         return context
 
