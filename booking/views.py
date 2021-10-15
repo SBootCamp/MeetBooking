@@ -1,51 +1,40 @@
-from django.contrib.auth.models import User
-from django.db.models import Prefetch
-from django.http import Http404
-from rest_framework.response import Response
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
-from rest_framework import permissions
-from rest_framework.decorators import action
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import CreateView
+from django.db import IntegrityError
 
-from booking.mixins import PermissionMixin, SerializerMixin
-from booking.permissions import IsOwnerEvent, BookingTimeNotPassed
 from booking.models import Cabinet, Event
-from booking.serializers import CabinetListSerializer, CabinetDetailSerializer, EventListSerializer, \
-    EventDetailSerializer, EventCreateUpdateSerializer
+from booking.forms import EventForm
 from booking.services import create_schedule
 
 
-class CabinetViewSet(SerializerMixin, ReadOnlyModelViewSet):
-    queryset = Cabinet.objects.all()
-    serializer_class = CabinetListSerializer
-    serializer_class_by_action = {'retrieve': CabinetDetailSerializer}
+class CabinetDetailView(LoginRequiredMixin, CreateView):
+    form_class = EventForm
+    template_name = 'cabinets/cabinets_detail.html'
 
-    def get_object(self):
+    def get_object(self, *args, **kwargs):
+        return get_object_or_404(Cabinet, room_number=self.kwargs.get('pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        events = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('pk')).values()
+        schedule = Paginator(create_schedule(events), 7)
+        context['schedule'] = schedule
+        context['cabinet'] = self.get_object()
+        return context
+
+    def form_valid(self, form):
+        new_event = form.save(commit=False)
+        new_event.owner = self.request.user
+        new_event.cabinet = self.get_object()
         try:
-            return Cabinet.objects.get(room_number=self.kwargs.get('pk'))
-        except Cabinet.DoesNotExist:
-            raise Http404
-
-    @action(detail=True, methods=['get'])
-    def schedule(self, *args, **kwargs):
-        event = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('pk')).values()
-        return Response(create_schedule(event), status=200)
-
-
-class EventViewSet(PermissionMixin, SerializerMixin, ModelViewSet):
-    permission_classes = [IsOwnerEvent, BookingTimeNotPassed]
-    serializer_class = EventCreateUpdateSerializer
-    permission_classes_by_action = {
-        'list': [permissions.AllowAny],
-        'retrieve': [permissions.AllowAny],
-        'create': [permissions.IsAuthenticated],
-    }
-    serializer_class_by_action = {
-        'list': EventListSerializer,
-        'retrieve': EventDetailSerializer,
-    }
-
-    def get_queryset(self):
-        queryset = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('room_number'))
-        if self.action == 'list':
-            return queryset
-        return queryset.prefetch_related(Prefetch('visitors', queryset=User.objects.only('username')))
+            new_event.save()
+            form.save_m2m()
+        except IntegrityError as exp:
+            if 'check_datetime' in str(exp):
+                form.add_error(None, 'Время окончания мероприятия должно быть больше начала')
+            else:
+                form.add_error(None, 'Указанное время занято')
+            return render(self.request, 'cabinets/cabinets_detail.html', self.get_context_data(form=form))
+        return render(self.request, 'cabinets/cabinets_detail.html', self.get_context_data())

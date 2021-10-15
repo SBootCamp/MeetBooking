@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Бронирование мероприятий{% endblock %}
+{% load static %}
+{% block content %}
+    <div class="container cabinet">
+        <div class="row">
+            <div class="col-9">
+                <div class="schedule">
+                    <h2>Расписание кабинета</h2>
+                    <div id="carouselExampleControls" class="carousel slide" data-bs-interval="false"
+                         data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            {% for date_time_list in schedule %}
+                                {% if date_time_list.number == 1 %}
+                                    <div class="carousel-item active">
+                                {% else %}
+                                    <div class="carousel-item">
+                                {% endif %}
+                            {% include 'cabinets/carousel_item.html' with date_time_list=date_time_list.object_list %}
+                            </div>
+                            {% endfor %}
+                            </div>
+                            <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                    data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class='booking'>
+                        <div class="booking-form">
+                            {% include "cabinets/bookinf_form.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

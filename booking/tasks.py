@@ -1,13 +1,11 @@
 from zoneinfo import ZoneInfo
-
 from django.contrib.auth.models import User
 from django.db.models import Prefetch
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
-
 from django.conf import settings
 
-from booking.celery import app
+from MeetBooking.celery import app
 from datetime import timedelta
 from django.utils import timezone
 from booking.models import Event
@@ -27,7 +25,7 @@ def send_events_mail():
         email_list = [visitors.email for visitors in event.visitors.all()]
         username_list = [visitors.username for visitors in event.visitors.all()]
         visitors_message = render_to_string(
-            'visitors_message.html',
+            'email_message/visitors_message.html',
             {
                 'event_start_time': event.start_time,
                 'event_end_time': event.end_time,
@@ -45,7 +43,7 @@ def send_events_mail():
                   html_message=visitors_message)
 
         owner_message = render_to_string(
-            'owner_message.html',
+            'email_message/owner_message.html',
             {
                 'user_name_list': username_list,
                 'event_start_time': event.start_time.astimezone(tz=ZoneInfo('Europe/Moscow')),

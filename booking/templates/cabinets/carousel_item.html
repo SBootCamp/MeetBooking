@@ -1,0 +1,20 @@
+<div class="schedule-body">
+    <div class="row row-cols-7">
+        {% for date_time in date_time_list %}
+            <div class="col">
+                <ul class="datetime-ul">
+                    {% for date,times in date_time.items %}
+                        <li class="date-li">{{ date }}</li>
+                        {% for time,event in times.items %}
+                            {% if event %}
+                                <li class="time-li open">{{ time }}</li>
+                            {% else %}
+                                <li class="time-li close">{{ time }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </div>
+</div>
