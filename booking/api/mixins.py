@@ -9,7 +9,7 @@ class PermissionMixin:
             return [permission() for permission in self.permission_classes]
 
 
-class SerializerMixin:
+class GetSerializerClassMixin:
     """Mixin serializers for action"""
     serializer_class_by_action = None
 

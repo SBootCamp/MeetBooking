@@ -47,7 +47,7 @@ if DEBUG:
     INSTALLED_APPS.extend(DEBUG_APPS)
     MIDDLEWARE.extend(DEBUG_MIDDLEWARE)
 
-ROOT_URLCONF = 'MeetBooking.urls'
+ROOT_URLCONF = 'meet_booking.urls'
 INTERNAL_IPS = ['127.0.0.1', ]
 TEMPLATES = [
     {
@@ -65,7 +65,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'MeetBooking.wsgi.application'
+WSGI_APPLICATION = 'meet_booking.wsgi.application'
 
 DATABASES = {
     'default': {
