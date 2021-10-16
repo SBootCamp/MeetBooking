@@ -1,61 +1,102 @@
-from datetime import datetime
-import random
 import pytz
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.datetime_safe import datetime
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APITestCase, APIClient
 
-from booking.models import Event
+from .models import Event, Cabinet
 
 
-def create_test_event(cabinet):
-    for i in range(0, 5000):
-        delta = (0, 30)
-        day = random.randint(1, 31)
-        date_time_start = datetime(
-            year=2021, month=10,
-            day=day, hour=random.randint(9, 21),
-            minute=random.choice(delta),
-            tzinfo=pytz.UTC,
+class BookingTests(APITestCase):
+    def create_event_json(self, start_time_hour, end_time_hour):
+        event = {
+            'title': 'tests',
+            'start_time': datetime(
+                year=timezone.now().year,
+                month=timezone.now().month,
+                day=timezone.now().day + 1,
+                hour=start_time_hour, minute=0, tzinfo=pytz.UTC
+            ),
+            'end_time': datetime(
+                year=timezone.now().year,
+                month=timezone.now().month,
+                day=timezone.now().day + 1,
+                hour=end_time_hour, minute=0, tzinfo=pytz.UTC
+            ),
+            'owner': self.user.id,
+            'cabinet': self.cabinet.id,
+            'visitors': [],
+        }
+        return event
+
+    def setUp(self):
+        self.client = APIClient()
+        self.cabinet = Cabinet.objects.create(floor=1, room_number=2)
+        self.user = User.objects.create_user(
+            username='user_test',
+            email='test@mail.ru',
+            password='12345678'
         )
-        date_time_end = datetime(
-            year=2021, month=10,
-            day=day, hour=random.randint(9, 21),
-            minute=random.choice(delta),
-            tzinfo=pytz.UTC,
+        self.user_token = Token.objects.create(user=self.user)
+        self.event = Event.objects.create(
+            title='tests',
+            start_time=datetime(
+                year=timezone.now().year,
+                month=timezone.now().month,
+                day=timezone.now().day + 1,
+                hour=12, minute=0, tzinfo=pytz.UTC
+            ),
+            end_time=datetime(
+                year=timezone.now().year,
+                month=timezone.now().month,
+                day=timezone.now().day + 1,
+                hour=15, minute=0, tzinfo=pytz.UTC
+            ),
+            owner=self.user,
+            cabinet=self.cabinet
         )
-        try:
-            Event.objects.create(
-                title=f'test {i}',
-                start_time=date_time_start,
-                end_time=date_time_end,
-                owner_id=1,
-                cabinet=cabinet
-            )
-            print(f'Good {i}')
-        except (IntegrityError, ValidationError):
-            continue
+        self.events_detail_url = reverse(
+            'events-detail', kwargs={
+                'room_number': self.cabinet.room_number,
+                'pk': self.event.id
+            })
+        self.events_list_url = reverse(
+            'events-list', kwargs={
+                'room_number': self.cabinet.room_number,
+            })
 
+    def test_intersection_time_events_variant_one(self):
+        event = self.create_event_json(start_time_hour=10, end_time_hour=13)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
+        response = self.client.post(self.events_list_url, event, format='json')
+        self.assertEqual(response.json(), ['Указанное время занято'])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-USERNAME = [
-    'Johnny Taylor', 'Mark Baldwin', 'Leon Fitzgerald', 'Calvin Reed', 'Dale Barrett', 'Brian Smith',
-    'Robert Vasquez', 'James Garcia', 'Marvin Schmidt', 'Steven Moore', 'Keith Medina', 'Christopher Martinez',
-    'Jason Poole', 'Stephen James', 'Pedro Williams', 'DanielBrown', 'Elmer Peters', 'Charles Davidson', 'Marc Powell',
-    'Charles Anderson', 'John Ellis', 'Kenneth Mitchell', 'Richard Murray', 'Charles Mason', 'Larry Hill',
-    'Matthew Vega', 'Kenneth Romero', 'Leon Francis', 'Victor Crawford', 'Richard Ross', 'Edward Carr', 'Jeffrey Day',
-    'Frank Lopez', 'Harold Thompson', 'Thomas Barnes', 'Ramon Sanchez', 'Hector Stokes', 'Dale Williams',
-    'Andrew Drake', 'James Stewart', 'Mike Newton', 'Chester Blair', 'Larry Barrett', 'Henry Watson', 'Robert Wright',
-    'Donald Martin', 'Robert Hicks', 'Donald Padilla', 'Jesse Morrison', 'Greg Glover'
-]
+    def test_intersection_time_events_variant_two(self):
+        event = self.create_event_json(start_time_hour=13, end_time_hour=17)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
+        response = self.client.post(self.events_list_url, event, format='json')
+        self.assertEqual(response.json(), ['Указанное время занято'])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_intersection_time_events_variant_three(self):
+        event = self.create_event_json(start_time_hour=13, end_time_hour=14)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
+        response = self.client.post(self.events_list_url, event, format='json')
+        self.assertEqual(response.json(), ['Указанное время занято'])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-def create_test_user():
-    User.objects.bulk_create([
-        User(
-            username=name,
-            email='USER@email.ru',
-            password=make_password('12345678'),
-            is_active=True,
-        ) for name in USERNAME
-    ])
+    def test_intersection_time_events_variant_four(self):
+        event = self.create_event_json(start_time_hour=10, end_time_hour=12)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
+        response = self.client.post(self.events_list_url, event, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_intersection_time_events_variant_five(self):
+        event = self.create_event_json(start_time_hour=15, end_time_hour=17)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
+        response = self.client.post(self.events_list_url, event, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
