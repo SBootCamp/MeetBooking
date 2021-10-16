@@ -21,4 +21,4 @@ services:
     
 volumes:
   redis:
-  test_postgres-data:
+  db_booking:

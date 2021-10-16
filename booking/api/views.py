@@ -11,13 +11,13 @@ from booking.api.mixins import PermissionMixin
 from booking.api.permissions import IsOwnerEvent, BookingTimeNotPassed
 from booking.api.serializers import EventListSerializer, \
     EventDetailSerializer, EventCreateUpdateSerializer
-from booking.api.mixins import SerializerMixin
+from booking.api.mixins import GetSerializerClassMixin
 from booking.models import Cabinet, Event
 from booking.api.serializers import CabinetListSerializer, CabinetDetailSerializer
 from booking.services import create_schedule
 
 
-class CabinetViewSet(SerializerMixin, ReadOnlyModelViewSet):
+class CabinetViewSet(GetSerializerClassMixin, ReadOnlyModelViewSet):
     queryset = Cabinet.objects.all()
     serializer_class = CabinetListSerializer
     serializer_class_by_action = {'retrieve': CabinetDetailSerializer}
@@ -31,7 +31,7 @@ class CabinetViewSet(SerializerMixin, ReadOnlyModelViewSet):
         return Response(create_schedule(event), status=200)
 
 
-class EventViewSet(PermissionMixin, SerializerMixin, ModelViewSet):
+class EventViewSet(PermissionMixin, GetSerializerClassMixin, ModelViewSet):
     permission_classes = [IsOwnerEvent, BookingTimeNotPassed]
     serializer_class = EventCreateUpdateSerializer
     permission_classes_by_action = {
