@@ -6,9 +6,9 @@ from booking.views import CabinetDetailView
 
 router = DefaultRouter()
 router.register("api/cabinets", CabinetViewSet, basename="cabinets")
-router.register("api/cabinets/(?P<room_number>[^/.]+)/events", EventViewSet, basename="events")
+router.register("api/cabinets/(?P<name>[^/.]+)/events", EventViewSet, basename="events")
 urlpatterns = router.urls
 
 urlpatterns += [
-    path("cabinets/<int:pk>/", CabinetDetailView.as_view(), name="booking")
+    path("cabinets/<str:pk>/", CabinetDetailView.as_view(), name="booking")
 ]

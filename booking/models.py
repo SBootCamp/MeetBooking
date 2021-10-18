@@ -23,9 +23,10 @@ class Cabinet(models.Model):
     tv = models.BooleanField(verbose_name='Наличие ТВ', default=False)
     floor = models.IntegerField(verbose_name='Этаж')
     room_number = models.IntegerField(verbose_name='Номер кабинета')
+    name = models.CharField(verbose_name='Наименование кабинета', unique=True, max_length=250)
 
     def __str__(self):
-        return str(self.room_number)
+        return self.name
 
     class Meta:
         verbose_name = 'Кабинет'

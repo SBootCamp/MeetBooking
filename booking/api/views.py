@@ -23,11 +23,11 @@ class CabinetViewSet(GetSerializerClassMixin, ReadOnlyModelViewSet):
     serializer_class_by_action = {'retrieve': CabinetDetailSerializer}
 
     def get_object(self):
-        return get_object_or_404(Cabinet, room_number=self.kwargs.get('pk'))
+        return get_object_or_404(Cabinet, name=self.kwargs.get('pk'))
 
     @action(detail=True, methods=['get'])
     def schedule(self, *args, **kwargs):
-        event = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('pk')).values()
+        event = Event.room_objects.filter(cabinet__name=self.kwargs.get('pk')).values()
         return Response(create_schedule(event), status=200)
 
 
@@ -45,7 +45,7 @@ class EventViewSet(PermissionMixin, GetSerializerClassMixin, ModelViewSet):
     }
 
     def get_queryset(self):
-        queryset = Event.room_objects.filter(cabinet__room_number=self.kwargs.get('room_number'))
+        queryset = Event.room_objects.filter(cabinet__name=self.kwargs.get('name'))
         if self.action == 'list':
             return queryset
         return queryset.prefetch_related(Prefetch('visitors', queryset=User.objects.only('username')))
