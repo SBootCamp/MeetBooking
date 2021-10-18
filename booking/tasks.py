@@ -34,9 +34,9 @@ def send_events_mail():
             }
         )
 
-        # Письма для посетителей мероприятия
+        # Отправка письма для посетителей мероприятия
         send_mail(settings.MAIL_HEADER,
-                  'Через 30 минут начало мероприятия',
+                  '',
                   settings.EMAIL_HOST_USER,
                   email_list,
                   html_message=visitors_message)
