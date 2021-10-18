@@ -7,57 +7,34 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
 
+from .factories import UserFactory, CabinetFactory, EventFactory
 from .models import Event, Cabinet
 
 
 class BookingTests(APITestCase):
-    def create_event_json(self, start_time_hour, end_time_hour):
+    def create_event_json(self, start_time: datetime, end_time: datetime, visitors=None) -> dict:
+        if visitors is None:
+            visitors = []
         event = {
             'title': 'tests',
-            'start_time': datetime(
-                year=timezone.now().year,
-                month=timezone.now().month,
-                day=timezone.now().day + 1,
-                hour=start_time_hour, minute=0, tzinfo=pytz.UTC
-            ),
-            'end_time': datetime(
-                year=timezone.now().year,
-                month=timezone.now().month,
-                day=timezone.now().day + 1,
-                hour=end_time_hour, minute=0, tzinfo=pytz.UTC
-            ),
+            'start_time': start_time,
+            'end_time': end_time,
             'owner': self.user.id,
             'cabinet': self.cabinet.id,
-            'visitors': [],
+            'visitors': visitors,
         }
         return event
 
     def setUp(self):
+        self.now = timezone.now()
         self.client = APIClient()
-        self.cabinet = Cabinet.objects.create(floor=1, room_number=2)
-        self.user = User.objects.create_user(
-            username='user_test',
-            email='test@mail.ru',
-            password='12345678'
-        )
+        self.cabinet = CabinetFactory()
+        self.user = UserFactory()
+        self.event = EventFactory()
+        self.visitors = UserFactory().create_batch(5)
+        print(self.visitors)
         self.user_token = Token.objects.create(user=self.user)
-        self.event = Event.objects.create(
-            title='tests',
-            start_time=datetime(
-                year=timezone.now().year,
-                month=timezone.now().month,
-                day=timezone.now().day + 1,
-                hour=12, minute=0, tzinfo=pytz.UTC
-            ),
-            end_time=datetime(
-                year=timezone.now().year,
-                month=timezone.now().month,
-                day=timezone.now().day + 1,
-                hour=15, minute=0, tzinfo=pytz.UTC
-            ),
-            owner=self.user,
-            cabinet=self.cabinet
-        )
+
         self.events_detail_url = reverse(
             'events-detail', kwargs={
                 'room_number': self.cabinet.room_number,
@@ -68,35 +45,40 @@ class BookingTests(APITestCase):
                 'room_number': self.cabinet.room_number,
             })
 
-    def test_intersection_time_events_variant_one(self):
-        event = self.create_event_json(start_time_hour=10, end_time_hour=13)
+    def test_failure_event_created(self):
+        start_time = datetime(
+            year=self.now.year,
+            month=self.now.month,
+            day=self.now.day + 1,
+            hour=10, minute=0, tzinfo=pytz.UTC
+        )
+        end_time = datetime(
+            year=self.now.year,
+            month=self.now.month,
+            day=self.now.day + 1,
+            hour=13, minute=0, tzinfo=pytz.UTC
+        )
+        event = self.create_event_json(start_time, end_time)
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
         response = self.client.post(self.events_list_url, event, format='json')
         self.assertEqual(response.json(), ['Указанное время занято'])
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_intersection_time_events_variant_two(self):
-        event = self.create_event_json(start_time_hour=13, end_time_hour=17)
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
-        response = self.client.post(self.events_list_url, event, format='json')
-        self.assertEqual(response.json(), ['Указанное время занято'])
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_intersection_time_events_variant_three(self):
-        event = self.create_event_json(start_time_hour=13, end_time_hour=14)
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
-        response = self.client.post(self.events_list_url, event, format='json')
-        self.assertEqual(response.json(), ['Указанное время занято'])
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_intersection_time_events_variant_four(self):
-        event = self.create_event_json(start_time_hour=10, end_time_hour=12)
-        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
-        response = self.client.post(self.events_list_url, event, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_intersection_time_events_variant_five(self):
-        event = self.create_event_json(start_time_hour=15, end_time_hour=17)
+    def test_success_event_created(self):
+        start_time = datetime(
+            year=self.now.year,
+            month=self.now.month,
+            day=self.now.day + 1,
+            hour=15, minute=0, tzinfo=pytz.UTC
+        )
+        end_time = datetime(
+            year=self.now.year,
+            month=self.now.month,
+            day=self.now.day + 1,
+            hour=17, minute=0, tzinfo=pytz.UTC
+        )
+        # visitors =
+        event = self.create_event_json(start_time, end_time)
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token.key)
         response = self.client.post(self.events_list_url, event, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
