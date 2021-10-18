@@ -111,6 +111,10 @@ START_TIME = 9
 END_TIME = 21
 STEP_TIME_MINUTES = 30
 
+# Заголовки писем на почту
+MAIL_HEADER = 'Напоминание о начале мероприятия'
+
+
 # REDIS
 REDIS_HOST = os.environ.get('REDIS_HOST', '0.0.0.0')
 REDIS_PORT = os.environ.get('REDIS_PORT', '6379')
