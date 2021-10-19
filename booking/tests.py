@@ -1,61 +1,66 @@
-from datetime import datetime
-import random
-import pytz
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.test import APITestCase, APIClient
 
-from booking.models import Event
+from .factories import UserFactory, CabinetFactory, EventFactory, get_datetime, create_event_json
 
 
-def create_test_event(cabinet):
-    for i in range(0, 5000):
-        delta = (0, 30)
-        day = random.randint(1, 31)
-        date_time_start = datetime(
-            year=2021, month=10,
-            day=day, hour=random.randint(9, 21),
-            minute=random.choice(delta),
-            tzinfo=pytz.UTC,
-        )
-        date_time_end = datetime(
-            year=2021, month=10,
-            day=day, hour=random.randint(9, 21),
-            minute=random.choice(delta),
-            tzinfo=pytz.UTC,
-        )
-        try:
-            Event.objects.create(
-                title=f'test {i}',
-                start_time=date_time_start,
-                end_time=date_time_end,
-                owner_id=1,
-                cabinet=cabinet
-            )
-            print(f'Good {i}')
-        except (IntegrityError, ValidationError):
-            continue
+class BookingTests(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.cabinet = CabinetFactory()
+        self.user_1 = UserFactory()
+        self.user_2 = UserFactory()
+        self.event = EventFactory(cabinet=self.cabinet, owner=self.user_1)
+        self.visitors = [UserFactory().id for _ in range(10)]
+        self.user_token_1 = Token.objects.create(user=self.user_1)
+        self.user_token_2 = Token.objects.create(user=self.user_2)
+        self.events_detail_url = reverse(
+            'events-detail', kwargs={
+                'name': self.cabinet.name,
+                'pk': self.event.id
+            })
+        self.events_list_url = reverse(
+            'events-list', kwargs={
+                'name': self.cabinet.name,
+            })
 
+    def test_failure_event_created(self):
+        start_time = get_datetime(hour=10)
+        end_time = get_datetime(hour=13)
+        event = create_event_json(start_time, end_time, self.cabinet, self.user_1)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token_1.key)
+        response = self.client.post(self.events_list_url, event, format='json')
+        self.assertEqual(response.json(), ['Указанное время занято'])
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-USERNAME = [
-    'Johnny Taylor', 'Mark Baldwin', 'Leon Fitzgerald', 'Calvin Reed', 'Dale Barrett', 'Brian Smith',
-    'Robert Vasquez', 'James Garcia', 'Marvin Schmidt', 'Steven Moore', 'Keith Medina', 'Christopher Martinez',
-    'Jason Poole', 'Stephen James', 'Pedro Williams', 'DanielBrown', 'Elmer Peters', 'Charles Davidson', 'Marc Powell',
-    'Charles Anderson', 'John Ellis', 'Kenneth Mitchell', 'Richard Murray', 'Charles Mason', 'Larry Hill',
-    'Matthew Vega', 'Kenneth Romero', 'Leon Francis', 'Victor Crawford', 'Richard Ross', 'Edward Carr', 'Jeffrey Day',
-    'Frank Lopez', 'Harold Thompson', 'Thomas Barnes', 'Ramon Sanchez', 'Hector Stokes', 'Dale Williams',
-    'Andrew Drake', 'James Stewart', 'Mike Newton', 'Chester Blair', 'Larry Barrett', 'Henry Watson', 'Robert Wright',
-    'Donald Martin', 'Robert Hicks', 'Donald Padilla', 'Jesse Morrison', 'Greg Glover'
-]
+    def test_success_event_created(self):
+        start_time = get_datetime(hour=15)
+        end_time = get_datetime(hour=17)
+        event = create_event_json(start_time, end_time, self.cabinet, self.user_1, self.visitors)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token_1.key)
+        response = self.client.post(self.events_list_url, event, format='json')
+        self.assertEqual(response.json().get('visitors'), self.visitors)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_success_patch_event(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token_1.key)
+        response = self.client.patch(self.events_detail_url, {'title': 'rename'}, format='json')
+        self.assertEqual(response.json().get('title'), 'rename')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-def create_test_user():
-    User.objects.bulk_create([
-        User(
-            username=name,
-            email='USER@email.ru',
-            password=make_password('12345678'),
-            is_active=True,
-        ) for name in USERNAME
-    ])
+    def test_failure_patch_event(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token_2.key)
+        response = self.client.patch(self.events_detail_url, {'title': 'rename'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_success_delete_event(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token_1.key)
+        response = self.client.delete(self.events_detail_url, self.event.id, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_failure_delete_event(self):
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.user_token_2.key)
+        response = self.client.delete(self.events_detail_url, self.event.id, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
