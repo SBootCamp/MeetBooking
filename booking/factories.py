@@ -7,7 +7,7 @@ from django.utils import timezone
 from booking.models import Event, Cabinet
 
 
-def get_datetime(hour):
+def get_datetime(hour: int) -> datetime:
     now = timezone.now()
     return datetime(year=now.year, month=now.month, day=now.day + 1, hour=hour, minute=0, tzinfo=pytz.UTC)
 
