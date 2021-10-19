@@ -1,16 +1,9 @@
-from datetime import datetime
-import random
-import pytz
-from django.contrib.auth.models import User
 from django.urls import reverse
-from django.utils import timezone
-from django.utils.datetime_safe import datetime
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase, APIClient
 
 from .factories import UserFactory, CabinetFactory, EventFactory, get_datetime, create_event_json
-from .models import Event, Cabinet
 
 
 class BookingTests(APITestCase):

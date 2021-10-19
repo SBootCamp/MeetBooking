@@ -1,11 +1,9 @@
 from datetime import datetime
 import factory
 import pytz
-import random
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.utils import timezone
-from factory import fuzzy
 from booking.models import Event, Cabinet
 
 
