@@ -36,10 +36,11 @@ class CabinetListSerializer(serializers.ModelSerializer):
 
 class CabinetDetailSerializer(serializers.ModelSerializer):
     schedule = CustomerHyperlinkCabinet(view_name='cabinets-schedule')
+    events = serializers.HyperlinkedIdentityField(view_name='events-list', lookup_field='name')
 
     class Meta:
         model = Cabinet
-        fields = ('room_number', 'name', 'floor', 'place_count', 'tv', 'projector', 'schedule')
+        fields = ('room_number', 'name', 'floor', 'place_count', 'tv', 'projector', 'schedule', 'events')
 
 
 class EventListSerializer(serializers.ModelSerializer):
@@ -62,10 +63,11 @@ class EventDetailSerializer(EventListSerializer):
         fields = ('id', 'title', 'start_time', 'end_time', 'owner', 'cabinet', 'visitors')
 
 
-class EventCreateUpdateSerializer(EventDetailSerializer):
+class EventCreateUpdateSerializer(EventListSerializer):
     visitors = serializers.PrimaryKeyRelatedField(queryset=User.objects.only('username'), many=True)
     cabinet = serializers.PrimaryKeyRelatedField(queryset=Cabinet.objects.only('name'))
     owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    duplication = serializers.BooleanField(default=False, label='Продулировать мероприятие')
 
     def validate_start_time(self, value):
         if value not in create_datetime_list():
@@ -88,3 +90,7 @@ class EventCreateUpdateSerializer(EventDetailSerializer):
             raise serializers.ValidationError(error_message)
         except ValidationError as exp:
             raise serializers.ValidationError(exp.messages)
+
+    class Meta:
+        model = Event
+        fields = ('id', 'title', 'start_time', 'end_time', 'owner', 'cabinet', 'visitors', 'duplication')

@@ -1,3 +1,4 @@
+from dateutil.parser import parse
 from django import forms
 from django.contrib.auth.models import User
 
@@ -43,6 +44,10 @@ class EventForm(forms.ModelForm):
         label='Кого пригласить',
         required=False,
     )
+    duplication = forms.BooleanField(
+        label='Продублировать мероприятие',
+        required=False,
+    )
 
     class Meta:
         model = Event
@@ -50,7 +55,7 @@ class EventForm(forms.ModelForm):
 
     def clean(self):
         data = self.cleaned_data
-        date = data['date']
-        data['start_time'] = f"{date}T{data['start_time']}Z"
-        data['end_time'] = f"{date}T{data['end_time']}Z"
+        date = data.pop('date')
+        data['start_time'] = parse(f"{date}T{data['start_time']}Z")
+        data['end_time'] = parse(f"{date}T{data['end_time']}Z")
         return data
