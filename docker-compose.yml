@@ -2,13 +2,11 @@ version: '3.7'
 services:
   web:
     build: ./
-    command: python manage.py runserver 127.0.0.1:${DJANGO_PORT} & python manage.py migrate
-    volumes:
-      - ./MeetBooking/:/usr/src/MeetBooking/
-    ports:
-      - ${DJANGO_PORT}:${DJANGO_PORT}
+    command: gunicorn --bind 0.0.0.0:${DJANGO_PORT} meet_booking.wsgi
     env_file:
       - ./.env
+    expose:
+      - ${DJANGO_PORT}
     depends_on:
       - db_booking
   redis:
@@ -29,7 +27,15 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-    
+  nginx:
+    build: ./nginx
+    ports:
+      - 8000:80
+    volumes:
+      - /Users/maxim/Desktop/MeetBooking/staticfiles:/home/MeetBooking/staticfiles
+    depends_on:
+      - web
+
 volumes:
   redis:
   db_booking:
