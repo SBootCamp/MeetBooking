@@ -30,9 +30,12 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - ${DJANGO_PORT}:80
+      - ${DJANGO_PORT}:${NGINX_OUTPUT_PORT}
+    environment:
+      - DJANGO_PORT=${DJANGO_PORT}
+      - NGINX_OUTPUT_PORT=${NGINX_OUTPUT_PORT}
     volumes:
-      - /Users/maxim/Desktop/MeetBooking/staticfiles:/home/MeetBooking/staticfiles
+      - ./staticfiles:/home/MeetBooking/staticfiles
     depends_on:
       - web
 

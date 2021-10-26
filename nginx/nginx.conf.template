@@ -1,9 +1,9 @@
 upstream django_proj {
-    server web:8000;
+    server web:${DJANGO_PORT};
 }
 
 server {
-    listen 80;
+    listen ${NGINX_OUTPUT_PORT};
 
     location / {
         proxy_pass http://django_proj;
