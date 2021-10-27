@@ -18,6 +18,7 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
+      - redis:/var/lib/redis/data
       - ./configs/redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
   db_booking:
@@ -46,5 +47,6 @@ services:
 
 volumes:
   db_booking:
+  redis:
   staticfiles:
     name: staticfiles
