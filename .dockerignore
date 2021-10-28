@@ -1,7 +1,7 @@
 .github
 venv
 .dockeringore
-.env
+.env.example
 .flake8
 .gitignore
 docker-compose.yml

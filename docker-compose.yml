@@ -18,11 +18,10 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
-      - redis:/var/lib/redis/data
-      - ./configs/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
+      - redis:/data
+      - ./configs/redis.conf:/etc/redis/redis.conf
   db_booking:
-    image: postgres:14.0
+    image: postgres
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
