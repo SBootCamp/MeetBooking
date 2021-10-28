@@ -11,6 +11,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'send-email': {
         'task': 'booking.tasks.send_events_mail',
-        'schedule': crontab(minute=f'0, 30')
+        'schedule': crontab(minute='0, 30')
     }
 }
