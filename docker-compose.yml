@@ -28,7 +28,7 @@ services:
     container_name: redis
     image: redis:6.2.6
     ports:
-      - ${REDIS_PORT}:${REDIS_PORT}
+      - ${REDIS_PORT}
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
@@ -38,7 +38,7 @@ services:
     container_name: postgres
     image: postgres
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      - ${POSTGRES_PORT}
     volumes:
       - db_booking:/var/lib/postgresql/data
     environment:
