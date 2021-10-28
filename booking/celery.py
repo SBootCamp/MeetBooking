@@ -10,10 +10,9 @@ app = Celery('booking')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
-
 app.conf.beat_schedule = {
     'send-email': {
         'task': 'booking.tasks.send_events_mail',
-        'schedule': crontab(minute=f'*/{settings.STEP_TIME_MINUTES}')
+        'schedule': crontab(minute=f'0, 30')
     }
 }
