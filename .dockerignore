@@ -6,3 +6,5 @@ venv
 .gitignore
 docker-compose.yml
 Dockerfile
+celerybeat.pid
+celerybeat-schedule.db
