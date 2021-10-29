@@ -1,24 +1,67 @@
 version: '3.7'
 services:
-  redis:
-    image: redis
-    ports:
-      - ${REDIS_PORT}:${REDIS_PORT}
+  web:
+    container_name: web
+    build: ./
+    command: gunicorn --bind 0.0.0.0:${DJANGO_PORT} meet_booking.wsgi"
+    env_file:
+      - ./.env
+    expose:
+      - ${DJANGO_PORT}
+    depends_on:
+      - db_booking
     volumes:
-      - redis:/var/lib/redis/data
+      - staticfiles:/home/MeetBooking/staticfiles/
+  celery_worker:
+    container_name: celery_worker
+    build: ./
+    command: celery -A booking worker -l info
+    depends_on:
+      - web
+  celery_beat:
+    container_name: celery_beat
+    build: ./
+    command: celery -A booking beat -l info
+    depends_on:
+      - web
+  redis:
+    container_name: redis
+    image: redis:6.2.6
+    expose:
+      - ${REDIS_PORT}
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - redis:/data
+      - ./configs/redis.conf:/etc/redis/redis.conf
   db_booking:
+    container_name: postgres
     image: postgres
-    ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    expose:
+      - ${POSTGRES_PORT}
     volumes:
       - db_booking:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-    
+  nginx:
+    container_name: nginx
+    image: nginx:1.21.3
+    ports:
+      - ${DJANGO_PORT}:${NGINX_OUTPUT_PORT}
+    environment:
+      - DJANGO_PORT=${DJANGO_PORT}
+      - NGINX_OUTPUT_PORT=${NGINX_OUTPUT_PORT}
+    volumes:
+      - ./static:/home/MeetBooking/static
+      - staticfiles:/home/MeetBooking/staticfiles/
+      - ./configs/nginx.conf.template:/etc/nginx/templates/default.conf.template
+    depends_on:
+      - web
+
 volumes:
-  redis:
   db_booking:
+  redis:
+  staticfiles:
+    name: staticfiles
