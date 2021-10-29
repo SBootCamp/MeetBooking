@@ -12,6 +12,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'send-email': {
         'task': 'booking.tasks.send_events_mail',
-        'schedule': crontab(minute=f'{settings.TASK_SCHEDULE_MINUTES}')
+        'schedule': crontab(minute=settings.CELERY_SEND_MAIL_SCHEDULE)
     }
 }
