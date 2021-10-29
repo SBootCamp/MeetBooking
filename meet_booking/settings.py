@@ -117,8 +117,7 @@ START_TIME = 9
 END_TIME = 21
 STEP_TIME_MINUTES = 30
 
-TASK_SCHEDULE_1 = 0
-TASK_SCHEDULE_2 = 30
+TASK_SCHEDULE_MINUTES = (0, 30)
 
 # Заголовки писем на почту
 MAIL_HEADER = 'Напоминание о начале мероприятия'
