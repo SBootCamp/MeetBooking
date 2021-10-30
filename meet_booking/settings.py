@@ -116,12 +116,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 START_TIME = 9
 END_TIME = 21
 STEP_TIME_MINUTES = 30
+PERIOD_DUPLICATION_DAYS = 7
 
 CELERY_SEND_MAIL_SCHEDULE = '0, 30'
 
 # Заголовки писем на почту
 MAIL_HEADER = 'Напоминание о начале мероприятия'
-
 
 # REDIS
 REDIS_HOST = os.environ.get('REDIS_HOST', '0.0.0.0')
