@@ -1,7 +1,6 @@
 import datetime
 from datetime import timezone
 
-from rest_framework import exceptions
 from rest_framework.authentication import TokenAuthentication as DrfTokenAutentification
 from rest_framework import exceptions
 from django.contrib.auth.models import User
