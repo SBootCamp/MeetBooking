@@ -116,6 +116,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [STATIC_DIR]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -125,6 +126,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 START_TIME = 9
 END_TIME = 21
 STEP_TIME_MINUTES = 30
+
+CELERY_SEND_MAIL_SCHEDULE = '0, 30'
 
 # Заголовки писем на почту
 MAIL_HEADER = 'Напоминание о начале мероприятия'
