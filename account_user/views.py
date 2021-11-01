@@ -9,14 +9,14 @@ from django.core import serializers
 
 from .contrib.rest_framework.authentication import TokenAuthentication
 from .serializers import RegisterSerializer, UserSerializer
-from  booking.models import Event
+from booking.models import Event
 
 
 class RegisterView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
 
-    def post(self, request, *args,  **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
