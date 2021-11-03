@@ -17,8 +17,8 @@ class AccountUserTest(TestCase):
         data = {
             'username': 'testuser',
             "email": 'testemail@yandex.ru',
-            'password': 'test123',
-            "password2": 'test123'
+            'password': 'user12345',
+            "password2": 'user12345'
         }
 
         response = self.client.post('/accounts/users', data)
@@ -28,7 +28,9 @@ class AccountUserTest(TestCase):
         except User.DoesNotExist:
             user = None
 
+        logger.info(response.json()['message'])
         logger.info("".join(["Статус код ", str(response.status_code)]))
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsInstance(user, User)
 
@@ -36,20 +38,42 @@ class AccountUserTest(TestCase):
         data = {
             'username': 'testuserfail',
             "email": 'testemailyandex',
-            'password': 'test123',
-            "password2": 'test123'
+            'password': 'test12345',
+            "password2": 'test12345'
         }
 
         response = self.client.post('/accounts/users', data)
 
-        try:
-            user = User.objects.get(username=data['username'])
-        except User.DoesNotExist:
-            user = None
+        logger.info("".join(["Статус код ", str(response.status_code)]))
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+        data['username'] = 'soo'
+        data['email'] = 'testemail@yandex.ru'
 
         logger.info("".join(["Статус код ", str(response.status_code)]))
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-        self.assertIsNone(user)
+
+        response = self.client.post('/accounts/users', data)
+
+        logger.info("".join(["Статус код ", str(response.status_code)]))
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+        data['username'] = 'testuserfail'
+        data['password'] = '123'
+        data['password2'] = '123'
+
+        response = self.client.post('/accounts/users', data)
+
+        logger.info("".join(["Статус код ", str(response.status_code)]))
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+        data['password'] = '!asdfg123'
+        data['password2'] = '!asdfg12'
+
+        response = self.client.post('/accounts/users', data)
+
+        logger.info("".join(["Статус код ", str(response.status_code)]))
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_сustom_auth_token_success(self):
         data = {
@@ -63,6 +87,7 @@ class AccountUserTest(TestCase):
 
         logger.info("".join(["Статус код ", str(response.status_code)]))
         logger.info("".join(["Токен ", token]))
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(token)
 
@@ -75,6 +100,8 @@ class AccountUserTest(TestCase):
         response = self.client.post('/accounts/api-token-auth/', data)
 
         logger.info("".join(["Статус код ", str(response.status_code)]))
+        logger.info(response.json()['non_field_errors'])
+
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_authentication_success(self):
@@ -91,6 +118,8 @@ class AccountUserTest(TestCase):
         username = response.json()['username']
 
         logger.info("".join(["Статус код ", str(response.status_code)]))
+        logger.info(response.json())
+
         self.assertEqual(username, data['username'])
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -100,4 +129,6 @@ class AccountUserTest(TestCase):
                                    follow=True)
 
         logger.info("".join(["Статус код ", str(response.status_code)]))
+        logger.info(response.json()['detail'])
+
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
