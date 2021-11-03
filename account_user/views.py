@@ -8,21 +8,21 @@ from rest_framework.views import APIView
 from django.core import serializers
 
 from .contrib.rest_framework.authentication import TokenAuthentication
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import RegistrationUserSerializer, UserSerializer
 from booking.models import Event
 
 
-class RegisterView(generics.GenericAPIView):
+class RegistrationView(generics.GenericAPIView):
     permission_classes = [permissions.AllowAny]
-    serializer_class = RegisterSerializer
+    serializer_class = RegistrationUserSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
-            "user": UserSerializer(user, context=self.get_serializer_context()).data,
-            "message": "Пользователь успешно создан",
+            'user': UserSerializer(user, context=self.get_serializer_context()).data,
+            'message': "Пользователь успешно создан",
         })
 
 
@@ -34,6 +34,7 @@ class CustomAuthToken(ObtainAuthToken):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
+
         return Response({
             'token': token.key,
             'user_id': user.pk,

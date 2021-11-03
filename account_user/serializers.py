@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class RegistrationUserSerializer(serializers.ModelSerializer):
 
     password2 = serializers.CharField(write_only=True, label="Повторите пароль")
     email = serializers.EmailField(allow_blank=True, allow_null=True)
