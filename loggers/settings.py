@@ -4,13 +4,16 @@ LOGGING = {
     'formatters': {
         'color_formatter': {
             'class': 'loggers.color_formatter.CustomFormatter',
-            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
+            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - '
+                      '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
         },
         'console': {
-            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
+            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - '
+                      '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
         },
         'file': {
-            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
+            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - '
+                      '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
         }
     },
     'handlers': {
