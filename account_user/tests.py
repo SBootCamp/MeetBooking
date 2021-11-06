@@ -21,7 +21,7 @@ class AccountUserTest(TestCase):
             "password2": 'user12345'
         }
 
-        response = self.client.post('/accounts/users', data)
+        response = self.client.post('/accounts/registration', data)
 
         try:
             user = User.objects.get(username=data['username'])
@@ -42,37 +42,42 @@ class AccountUserTest(TestCase):
             "password2": 'test12345'
         }
 
-        response = self.client.post('/accounts/users', data)
+        response = self.client.post('/accounts/registration', data)
 
+        logger.info(response.json()['email'])
         logger.info("".join(["Статус код ", str(response.status_code)]))
+
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
         data['username'] = 'soo'
         data['email'] = 'testemail@yandex.ru'
 
-        logger.info("".join(["Статус код ", str(response.status_code)]))
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        response = self.client.post('/accounts/registration', data)
 
-        response = self.client.post('/accounts/users', data)
-
+        logger.info(response.json()['username'])
         logger.info("".join(["Статус код ", str(response.status_code)]))
+
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
         data['username'] = 'testuserfail'
         data['password'] = '123'
         data['password2'] = '123'
 
-        response = self.client.post('/accounts/users', data)
+        response = self.client.post('/accounts/registration', data)
 
+        logger.info(response.json()['password2'])
         logger.info("".join(["Статус код ", str(response.status_code)]))
+
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
         data['password'] = '!asdfg123'
         data['password2'] = '!asdfg12'
 
-        response = self.client.post('/accounts/users', data)
+        response = self.client.post('/accounts/registration', data)
 
+        logger.info(response.json()['non_field_errors'])
         logger.info("".join(["Статус код ", str(response.status_code)]))
+
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_сustom_auth_token_success(self):
@@ -99,8 +104,8 @@ class AccountUserTest(TestCase):
 
         response = self.client.post('/accounts/api-token-auth/', data)
 
-        logger.info("".join(["Статус код ", str(response.status_code)]))
         logger.info(response.json()['non_field_errors'])
+        logger.info("".join(["Статус код ", str(response.status_code)]))
 
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
@@ -118,7 +123,6 @@ class AccountUserTest(TestCase):
         username = response.json()['username']
 
         logger.info("".join(["Статус код ", str(response.status_code)]))
-        logger.info(response.json())
 
         self.assertEqual(username, data['username'])
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -128,7 +132,7 @@ class AccountUserTest(TestCase):
                                    HTTP_AUTHORIZATION="Token ",
                                    follow=True)
 
-        logger.info("".join(["Статус код ", str(response.status_code)]))
         logger.info(response.json()['detail'])
+        logger.info("".join(["Статус код ", str(response.status_code)]))
 
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
