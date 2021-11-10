@@ -3,7 +3,7 @@ services:
   web:
     container_name: web
     build: ./
-    command: gunicorn --bind 0.0.0.0:${DJANGO_PORT} meet_booking.wsgi"
+    command: "gunicorn --bind 0.0.0.0:${DJANGO_PORT} meet_booking.wsgi"
     env_file:
       - ./.env
     expose:
