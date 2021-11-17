@@ -3,7 +3,7 @@ services:
   web:
     container_name: web
     build: ./
-    command: gunicorn --bind 0.0.0.0:${DJANGO_PORT} meet_booking.wsgi"
+    command: "gunicorn --bind 0.0.0.0:${DJANGO_PORT} meet_booking.wsgi"
     env_file:
       - ./.env
     expose:
@@ -37,8 +37,8 @@ services:
   db_booking:
     container_name: postgres
     image: postgres
-    expose:
-      - ${POSTGRES_PORT}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
       - db_booking:/var/lib/postgresql/data
     environment:
