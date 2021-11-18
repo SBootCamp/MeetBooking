@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -8,7 +10,7 @@ from rest_framework.views import APIView
 from django.core import serializers
 
 from .contrib.rest_framework.authentication import TokenAuthentication
-from .serializers import RegistrationUserSerializer, UserSerializer
+from .serializers import RegistrationUserSerializer
 from booking.models import Event
 
 
@@ -19,9 +21,9 @@ class RegistrationView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        serializer.save()
         return Response({
-            'user': UserSerializer(user, context=self.get_serializer_context()).data,
+            'status_code': HTTPStatus.CREATED,
             'message': "Пользователь успешно создан",
         })
 
@@ -36,13 +38,11 @@ class CustomAuthToken(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
 
         return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email
+            'token': token.key
         })
 
 
-class AuthenticationView(APIView):
+class UserProfileView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 

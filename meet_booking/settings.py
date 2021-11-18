@@ -138,3 +138,11 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', default=587)
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', default=True)
+
+TOKEN_LIFETIME = 30
+LOWER_VALUE_LENGTH_NAME = 6
+UPPER_VALUE_LENGTH_NAME = 25
+TOKEN_MAX_LENGTH = 255
+
+LOG_FORMAT = '%(asctime)s - [%(levelname)s] -  %(name)s - ' \
+             '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'

@@ -1,19 +1,19 @@
+from meet_booking.settings import LOG_FORMAT
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'color_formatter': {
-            'class': 'loggers.color_formatter.CustomFormatter',
-            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - '
-                      '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
+            'class': 'loggers.color_formatter.ColorFormatter',
+            'format': LOG_FORMAT
         },
         'console': {
-            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - '
-                      '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
+            'format': LOG_FORMAT
         },
         'file': {
-            'format': '%(asctime)s - [%(levelname)s] -  %(name)s - '
-                      '(%(filename)s).%(funcName)s(%(lineno)d) - %(message)s'
+            'format': LOG_FORMAT
         }
     },
     'handlers': {
