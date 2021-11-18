@@ -45,8 +45,7 @@ class AccountUserTest(TestCase):
 
         response = self.client.post('/accounts/registration', data)
 
-        logger.info("Ошибка при регистрации пользователя: "
-                    + "".join(response.json()['email']))
+        logger.info("Ошибка при регистрации пользователя: " + "".join(response.json()['email']))
         logger.info(f"Статус код {response.status_code}")
 
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST,
